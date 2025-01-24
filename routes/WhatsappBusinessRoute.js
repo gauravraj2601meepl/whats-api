@@ -27,6 +27,7 @@ router.post("/webhook", async (req, res) => {
 
     if (body.object === "whatsapp_business_account") {
         body.entry.forEach(async (entry) => {
+            console.log("entry", entry)
             entry.changes.forEach(async (change) => {
                 const messageData = change.value.messages;
 
