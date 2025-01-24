@@ -142,7 +142,7 @@ exports.sendTemplateMessage = async (req, res) => {
         };
         const response = await axios.post(url,data,{headers});
         const res_data = response.data || 'Unknown';
-        console.log("res_data", res_data)
+        console.log("res_data_textMessage", res_data)
         return res.status(200).json({
             statuscode: 200,
             status: "success",
