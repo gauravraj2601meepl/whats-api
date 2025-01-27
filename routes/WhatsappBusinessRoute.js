@@ -6,6 +6,7 @@ const router = express.Router();
 const { sendTemplateMessage, sendTextMessage, sendMessage } = require("../controller/WhatsappTestController");
 const { appendFile } = require("fs");
 const { sendTemplateMessage1 } = require("../controller/HelperFunctions");
+const { handleAddJobFlow } = require("../controller/Helper/AddJobHelper");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 
@@ -98,6 +99,13 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                                 message: "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists"
                             });
                             break;
+                        case "/addjob":
+                            jobData[from] = { step: 0 }; //Initialize the job creation process
+                            await sendMessage({
+                                number: from,
+                                message: "Let's add a new job!Please provide the Job Title."
+                            });
+                            break;
                         default:
                             await sendMessage({
                                 number: from,
@@ -105,7 +113,11 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                                 message: "❓ Unknown command. Type /help for a list of available commands."
                             });
                     }
-                } else {
+                }
+                else if (jobData[from]) {
+                    await handleAddJobFlow(from, text, sendMessage);
+                } 
+                else {
                     // If the message is not a command, show a default message
                     await sendMessage({
                         number: from,
