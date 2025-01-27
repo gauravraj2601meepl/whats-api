@@ -1,10 +1,11 @@
-const express = require("express");
+const express= require("express");
 
 const router = express.Router();
 
 
-const { sendTemplateMessage, sendTextMessage, sendMessage, sendTemplateMessage1 } = require("../controller/WhatsappTestController");
+const { sendTemplateMessage, sendTextMessage, sendMessage } = require("../controller/WhatsappTestController");
 const { appendFile } = require("fs");
+const { sendTemplateMessage1 } = require("../controller/HelperFunctions");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 
