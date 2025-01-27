@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 
-const { sendTemplateMessage, sendTextMessage } = require("../controller/WhatsappTestController");
+const { sendTemplateMessage, sendTextMessage, sendMessage } = require("../controller/WhatsappTestController");
 const { appendFile } = require("fs");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
@@ -24,19 +24,27 @@ router.get("/webhook", (req,res)=>{
 
 router.post("/webhook", async (req, res) => {
     const body = req.body;
-console.log("req.body", JSON.stringify(body, null,2))
+    
+
+console.log("req.bodyMain", JSON.stringify(body, null,2))
     if (body.object === "whatsapp_business_account") {
         body.entry.forEach(async (entry) => {
-            console.log("entry", entry)
             entry.changes.forEach(async (change) => {
+                let profileName;
+                let newMessage;
                 const messageData = change.value.messages;
+                const contactData = change.value.contacts;
+                if (contactData && contactData.length > 0) {
+                     profileName = contactData[0].profile.name
+                    console.log("profileName:", profileName)
+                }
 
                 if (messageData && messageData.length > 0) {
                     const message = messageData[0];
                     const from = message.from;
                     const text = message.text ? message.text.body : null;
 
-                    const newMessage = {
+                     newMessage = {
                         from,
                         text,
                         timestamp: new Date(),
@@ -44,7 +52,9 @@ console.log("req.body", JSON.stringify(body, null,2))
 
                     // await newMessage.save();
                     console.log("Message saved:", newMessage);
+
                 }
+                sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
             });
         });
 

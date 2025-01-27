@@ -162,6 +162,31 @@ exports.sendTemplateMessage = async (req, res) => {
 
 // sendTextMessage()
 
+exports.sendMessage = async (req) => {
+    const {number, name, message} = req.body
+    try {
+        const url = `${process.env.WHATSAPP_API}/messages`;
+        const headers = {
+            "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        };
+        const data = {
+            messaging_product: "whatsapp",
+            to: number, 
+            type: "text",
+            text: {
+                body: `${name}- ${message}`
+            }
+        };
+        const response = await axios.post(url,data,{headers});
+        const res_data = response.data || 'Unknown';
+        console.log("res_data_textMessage", res_data)
+        
+    } catch (err) {
+        console.log("errWhatsAppRes", err, err.message, err.response?.data)
+    }
+}
+
 const uploadLogo = async (req, res) => {
     const data = new FormData();
     data.append('messaging_product', 'whatsapp')
