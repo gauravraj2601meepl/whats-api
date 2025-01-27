@@ -11,19 +11,21 @@ router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 
 router.get("/webhook", (req,res)=>{
-
+    
     const VERIFY_TOKEN = "meepl";
     const mode = req.query["hub.mode"];
     const token = req.query["hub.verify_token"];
     const challenge = req.query["hub.challenge"];
-
+    
     if (mode && token === VERIFY_TOKEN) {
         console.log("Webhook Verified");
         return res.status(200).send(challenge);
     }
-
+    
     res.sendStatus(403);
 })
+
+const jobData = {}; // Temporary storage for user input data
 
 router.post("/webhook", async (req, res) => {
     const body = req.body;
