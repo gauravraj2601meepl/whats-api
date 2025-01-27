@@ -54,10 +54,63 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                     // await newMessage.save();
                     console.log("Message saved:", newMessage);
 
+                
+                // if(newMessage) {
+                //     sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
+                // }
+                // Check if message starts with "/"
+                if (text && text.startsWith("/")) {
+                    // Handle different commands
+                    switch (text) {
+                        case "/review":
+                            await sendMessage({
+                                number: from,
+                                name: profileName,
+                                message: "📝 Here's a review of your task progress!"
+                            });
+                            break;
+                        case "/summary":
+                            await sendMessage({
+                                number: from,
+                                name: profileName,
+                                message: "👁️ Here's your overall summary update."
+                            });
+                            break;
+                        case "/showlists":
+                            await sendMessage({
+                                number: from,
+                                name: profileName,
+                                message: "📋 Here are all your task lists."
+                            });
+                            break;
+                        case "/help":
+                            await sendMessage({
+                                number: from,
+                                name: profileName,
+                                message: "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists"
+                            });
+                            break;
+                        default:
+                            await sendMessage({
+                                number: from,
+                                name: profileName,
+                                message: "❓ Unknown command. Type /help for a list of available commands."
+                            });
+                    }
+                } else {
+                    // If the message is not a command, show a default message
+                    await sendMessage({
+                        number: from,
+                        name: profileName,
+                        message: "👋 Welcome! Type /help to see the available commands."
+                    });
                 }
-                if(newMessage) {
-                    sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
-                }
+
+
+
+              
+            }
+
             });
         });
 
