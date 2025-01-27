@@ -1,4 +1,4 @@
-const axios  = require("axios");
+const axios = require('axios');
 require("dotenv").config();
 const fs = require("fs")
 // WHATSAPP_TOKEN
