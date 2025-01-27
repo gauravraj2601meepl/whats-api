@@ -67,7 +67,7 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                 if (text && text.startsWith("/")) {
                     // Handle different commands
                     switch (text) {
-                        case "/meepl":
+                        case "/start meepl":
                             await sendTemplateMessage1({
                                 number: from,
                                 name: profileName,
@@ -94,11 +94,11 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                                 message: "📋 Here are all your task lists."
                             });
                             break;
-                        case "/help":
+                        case "/":
                             await sendMessage({
                                 number: from,
                                 name: profileName,
-                                message: "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists"
+                                message: "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job"
                             });
                             break;
                         case "/addjob":
@@ -112,7 +112,7 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                             await sendMessage({
                                 number: from,
                                 name: profileName,
-                                message: "❓ Unknown command. Type /help for a list of available commands."
+                                message: "❓ Unknown command. Type / for a list of available commands."
                             });
                     }
                 }
@@ -124,7 +124,7 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                     await sendMessage({
                         number: from,
                         name: profileName,
-                        message: "👋 Welcome! Type /help to see the available commands."
+                        message: "👋 Welcome! Type / to see the available commands."
                     });
                 }
 
