@@ -1,3 +1,6 @@
+const { default: axios } = require("axios");
+
+
 exports.sendTemplateMessage1 = async (req,res) => {
     try {
         const {number, name} = req
