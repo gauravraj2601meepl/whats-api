@@ -89,12 +89,13 @@ exports.sendMessage = async (req) => {
             "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
             "Content-Type": "application/json",
         };
+        const bodyText = name ? `${name} - ${message}` : message;
         const data = {
             messaging_product: "whatsapp",
             to: number, 
             type: "text",
             text: {
-                body: `${name}- ${message}`
+                body: bodyText
             }
         };
         const response = await axios.post(url,data,{headers});
