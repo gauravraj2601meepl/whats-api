@@ -163,7 +163,7 @@ exports.sendTemplateMessage = async (req, res) => {
 // sendTextMessage()
 
 exports.sendMessage = async (req) => {
-    const {number, name, message} = req.body
+    const {number, name, message} = req
     try {
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
