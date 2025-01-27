@@ -1,3 +1,5 @@
+const jobData = require("./JobDataStorage");
+
 exports.handleAddJobFlow = async (from, text, sendMessage) => {
     const userJobData = jobData[from];
 

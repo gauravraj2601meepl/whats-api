@@ -7,6 +7,7 @@ const { sendTemplateMessage, sendTextMessage, sendMessage } = require("../contro
 const { appendFile } = require("fs");
 const { sendTemplateMessage1 } = require("../controller/HelperFunctions");
 const { handleAddJobFlow } = require("../controller/Helper/AddJobHelper");
+const jobData = require("../controller/Helper/JobDataStorage");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 
@@ -25,7 +26,6 @@ router.get("/webhook", (req,res)=>{
     res.sendStatus(403);
 })
 
-const jobData = {}; // Temporary storage for user input data
 
 router.post("/webhook", async (req, res) => {
     const body = req.body;
