@@ -31,7 +31,7 @@ const sendTemplateMessage2 = async (req) => {
        
     }
 };
-const sendTemplateMessage1 = async (req,res) => {
+export const sendTemplateMessage1 = async (req,res) => {
     try {
         const {number, name} = req
         console.log("nameeeee", number, name)

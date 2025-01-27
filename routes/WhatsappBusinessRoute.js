@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 
-const { sendTemplateMessage, sendTextMessage, sendMessage } = require("../controller/WhatsappTestController");
+const { sendTemplateMessage, sendTextMessage, sendMessage, sendTemplateMessage1 } = require("../controller/WhatsappTestController");
 const { appendFile } = require("fs");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
@@ -62,6 +62,12 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                 if (text && text.startsWith("/")) {
                     // Handle different commands
                     switch (text) {
+                        case "/meepl":
+                            await sendTemplateMessage1({
+                                number: from,
+                                name: profileName,
+                            });
+                            break;
                         case "/review":
                             await sendMessage({
                                 number: from,
