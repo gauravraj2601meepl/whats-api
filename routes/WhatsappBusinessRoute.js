@@ -34,6 +34,7 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                 let newMessage;
                 const messageData = change.value.messages;
                 const contactData = change.value.contacts;
+
                 if (contactData && contactData.length > 0) {
                      profileName = contactData[0].profile.name
                     console.log("profileName:", profileName)
@@ -54,7 +55,9 @@ console.log("req.bodyMain", JSON.stringify(body, null,2))
                     console.log("Message saved:", newMessage);
 
                 }
-                sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
+                if(newMessage) {
+                    sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
+                }
             });
         });
 
