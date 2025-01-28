@@ -49,7 +49,7 @@ exports.sendTemplateMessage1 = async (req,res) => {
         
     } catch (err) {
         // Handle any errors that occur
-        console.log("errWhatsAppRes", err, err?.message, err?.response?.data)
+        console.log("errWhatsAppRes", err?.message, err?.response?.data)
        
     }
 };
@@ -78,7 +78,7 @@ exports.sendTemplateMessage2 = async (req) => {
         return res_data = response.data || 'Unknown';
        
     } catch (err) {
-        console.log("errWhatsAppRes", err, err?.message, err?.response?.data)
+        console.log("errWhatsAppRes", err?.message, err?.response?.data)
        
     }
 };
@@ -126,12 +126,9 @@ exports.sendMessage = async (req) => {
         console.log("res_data_textMessage", res_data)
         
     } catch (err) {
-        console.log("errWhatsAppRes", err, err.message, err.response?.data)
+        console.log("err.messsages",err.message, "err.response.data",err.response?.data)
     }
 }
-
-
-
 
 
 
@@ -155,7 +152,7 @@ const uploadLogo = async (req, res) => {
         }
 
     } catch (err) {
-        console.log("errWhatsAppRes", err, err.message, err.response?.data)
+        console.log("errWhatsAppRes", err.message, err.response?.data)
     }
 }
 
@@ -184,7 +181,7 @@ const sendImage = async (id) => {
         const res_data = response.data || 'Unknown';
         console.log("res_data", res_data)
     } catch (err) {
-        console.log("errWhatsAppRes", err, err.message, err.response?.data)
+        console.log("errWhatsAppRes", err.message, err.response?.data)
     }
 }
 // sendImage()

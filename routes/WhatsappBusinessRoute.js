@@ -5,16 +5,18 @@ const router = express.Router();
 const {
   sendTemplateMessage,
   sendTextMessage,
+  sendTextMessagePreview,
 } = require("../controller/WhatsappTestController");
 const {
   sendTemplateMessage1,
   sendMessage,
+ 
 } = require("../controller/HelperFunctions");
 const { handleAddJobFlow } = require("../controller/Helper/AddJobHelper");
 const jobData = require("../controller/Helper/JobDataStorage");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
-
+router.post("/sendMeeplInfo", sendTextMessagePreview);
 router.get("/webhook", (req, res) => {
   const VERIFY_TOKEN = "meepl";
   const mode = req.query["hub.mode"];
@@ -59,14 +61,14 @@ router.post("/webhook", async (req, res) => {
           console.log("Message saved:", newMessage);
 
           // Check if message starts with "/"
-            if (interactiveData && interactiveData.button_reply) {
-                const selectedCommandId = interactiveData.button_reply.id
-                await handleCommand(selectedCommandId, from, contactData[0].profile.name)
-            }
-            else if (text === "/") {
-                await sendCommandOptions(from);
-            }
-            else if (text && text.startsWith("/")) {
+            // if (interactiveData && interactiveData.button_reply) {
+            //     const selectedCommandId = interactiveData.button_reply.id
+            //     await handleCommand(selectedCommandId, from, contactData[0].profile.name)
+            // }
+            // else if (text === "/") {
+            //     await sendCommandOptions(from);
+            // }
+             if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name)
 
@@ -174,14 +176,14 @@ const handleCommand = async (text, from ,profileName) => {
             message: "📋 Here are all your task lists.",
           });
           break;
-        // case "/":
-        //   await sendMessage({
-        //     number: from,
-        //     name: profileName,
-        //     message:
-        //       "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
-        //   });
-        //   break;
+        case "/":
+          await sendMessage({
+            number: from,
+            name: profileName,
+            message:
+              "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
+          });
+          break;
         case "/addjob":
           jobData[from] = { step: 0 }; //Initialize the job creation process
           await sendMessage({

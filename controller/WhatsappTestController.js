@@ -89,3 +89,41 @@ exports.sendTextMessage = async (req, res) => {
     });
   }
 };
+
+exports.sendTextMessagePreview = async (req, res) => {
+  const { number, name, message } = req.body;
+  try {
+    const url = `${process.env.WHATSAPP_API}/messages`;
+    const headers = {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    };
+    const data = {
+      messaging_product: "whatsapp",
+      to: number,
+      type: "image",
+      image: {
+        // link: "https://meepldevstorage.nyc3.digitaloceanspaces.com/fulllogo.PNG", 
+        link: "https://i.ibb.co/zh38G0W/Untitled.png", 
+        caption: "Meepl \nhttps://wa.me/15551584583?text=%2Fstart%20meepl\n\nThank you for reaching out!", 
+      },
+    };
+    const response = await axios.post(url, data, { headers });
+    const res_data = response.data || "Unknown";
+    console.log("res_data_textMessage", res_data);
+    return res.status(200).json({
+      statuscode: 200,
+      status: "success",
+      data: res_data,
+      error: [{ message: "", errorcode: "" }],
+    });
+  } catch (err) {
+    console.log("errWhatsAppRes", err.message, err.response?.data);
+    res.status(500).json({
+      statuscode: 500,
+      status: "failed",
+      data: null,
+      error: [{ message: err.message, errorcode: 500 }],
+    });
+  }
+};
