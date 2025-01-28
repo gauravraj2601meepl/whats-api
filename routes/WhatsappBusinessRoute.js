@@ -93,7 +93,7 @@ router.post("/webhook", async (req, res) => {
 
 const sendCommandOptions = async (from) => {
     const commands = [
-        { id: "/meepl", title: "Meepl" },
+        { id: "/start meepl", title: "Meepl" },
         { id: "/review", title: "Review" },
         { id: "/summary", title: "Summary" },
         { id: "/showlists", title: "Show Lists" },
@@ -101,23 +101,47 @@ const sendCommandOptions = async (from) => {
         { id: "/addjob", title: "Add Job" }
     ];
 
-    const maxButtons = 3;
-    const limitedCommands = commands.slice(0, maxButtons);
+    // Helper function to send messages in chunks
+    const sendInChunks = async (commandsChunk) => {
+        const buttons = commandsChunk.map((cmd) => ({
+            type: "reply",
+            reply: {
+                id: cmd.id,
+                title: cmd.title
+            }
+        }));
 
-    const buttons = limitedCommands.map((cmd) => ({
-        type: "reply",
-        reply: {
-            id: cmd.id,
-            title: cmd.title
-        }
-    }));
+        await sendMessage({
+            number: from,
+            message: "📋 Select a command:",
+            type: "interactive",
+            buttons: buttons
+        });
+    };
 
-    await sendMessage({
-        number: from,
-        message: "📋 Select a command:",
-        type: "interactive",
-        buttons: buttons
-    });
+    // Send the commands in chunks of 3
+    const chunkSize = 3;
+    for (let i = 0; i < commands.length; i += chunkSize) {
+        const chunk = commands.slice(i, i + chunkSize);
+        await sendInChunks(chunk);
+    }
+    // const maxButtons = 3;
+    // const limitedCommands = commands.slice(0, maxButtons);
+
+    // const buttons = limitedCommands.map((cmd) => ({
+    //     type: "reply",
+    //     reply: {
+    //         id: cmd.id,
+    //         title: cmd.title
+    //     }
+    // }));
+
+    // await sendMessage({
+    //     number: from,
+    //     message: "📋 Select a command:",
+    //     type: "interactive",
+    //     buttons: buttons
+    // });
 };
 
 
