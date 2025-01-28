@@ -97,14 +97,16 @@ const sendCommandOptions = async (from) => {
         { id: "/addjob", title: "Add Job" }
     ];
 
-    const buttons = commands.map((cmd) => ({
+    const maxButtons = 3;
+    const limitedCommands = commands.slice(0, maxButtons);
+
+    const buttons = limitedCommands.map((cmd) => ({
         type: "reply",
         reply: {
             id: cmd.id,
             title: cmd.title
         }
     }));
-
 
     await sendMessage({
         number: from,
