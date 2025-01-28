@@ -69,6 +69,10 @@ router.post("/webhook", async (req, res) => {
 
                 })
             }
+            else if (interactiveData && interactiveData.list_reply){
+                const selectedCommandId = interactiveData.list_reply.id
+                await handleCommand(selectedCommandId, from, contactData[0].profile.name)
+            }
             else if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name)
@@ -103,6 +107,7 @@ const handleCommand = async (text, from ,profileName) => {
           });
           break;
         case "/review":
+        case "1":
           await sendMessage({
             number: from,
             name: profileName,
@@ -110,6 +115,7 @@ const handleCommand = async (text, from ,profileName) => {
           });
           break;
         case "/summary":
+        case "2":
           await sendMessage({
             number: from,
             name: profileName,
@@ -117,6 +123,7 @@ const handleCommand = async (text, from ,profileName) => {
           });
           break;
         case "/showlists":
+        case "3":
           await sendMessage({
             number: from,
             name: profileName,
@@ -132,6 +139,7 @@ const handleCommand = async (text, from ,profileName) => {
           });
           break;
         case "/addjob":
+        case "4":
           jobData[from] = { step: 0 }; //Initialize the job creation process
           await sendMessage({
             number: from,

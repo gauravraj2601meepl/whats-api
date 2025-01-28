@@ -138,9 +138,10 @@ exports.sendWhatsAppMessage = async (data) => {
             "Content-Type": "application/json",
         };
         const response = await axios.post(url,data,{headers});
+        const res_data = response.data || 'Unknown';
         console.log("res_data_sendWhatsAppMessage", res_data)
         return response.data;
-    } catch (error) {
+    } catch (err) {
         console.log("err.sendWhatsAppMessage",err.message, "sendWhatsAppMessage.response.data",err.response?.data)
 
     }
