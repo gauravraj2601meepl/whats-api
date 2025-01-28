@@ -56,67 +56,16 @@ router.post("/webhook", async (req, res) => {
             text,
             timestamp: new Date(),
           };
-
-          // await newMessage.save();
           console.log("Message saved:", newMessage);
 
-          // if(newMessage) {
-          //     sendMessage({number: newMessage.from, name:profileName, message:`This is a message reply of ${newMessage.text}`})
-          // }
           // Check if message starts with "/"
-          if (text && text.startsWith("/")) {
-            // Handle different commands
-            switch (text) {
-              case "/start meepl":
-                await sendTemplateMessage1({
-                  number: from,
-                  name: profileName,
-                });
-                break;
-              case "/review":
-                await sendMessage({
-                  number: from,
-                  name: profileName,
-                  message: "📝 Here's a review of your task progress!",
-                });
-                break;
-              case "/summary":
-                await sendMessage({
-                  number: from,
-                  name: profileName,
-                  message: "👁️ Here's your overall summary update.",
-                });
-                break;
-              case "/showlists":
-                await sendMessage({
-                  number: from,
-                  name: profileName,
-                  message: "📋 Here are all your task lists.",
-                });
-                break;
-              case "/":
-                await sendMessage({
-                  number: from,
-                  name: profileName,
-                  message:
-                    "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
-                });
-                break;
-              case "/addjob":
-                jobData[from] = { step: 0 }; //Initialize the job creation process
-                await sendMessage({
-                  number: from,
-                  message: "Let's add a new job!Please provide the Job Title.",
-                });
-                break;
-              default:
-                await sendMessage({
-                  number: from,
-                  name: profileName,
-                  message:
-                    "❓ Unknown command. Type / for a list of available commands.",
-                });
+            if (text === "/") {
+                await sendCommandOptions(from);
             }
+            else if (text && text.startsWith("/")) {
+            // Handle different commands
+            await handleCommand(text, from, contactData[0].profile.name)
+
           } else if (jobData[from]) {
             await handleAddJobFlow(from, text, sendMessage);
           } else {
@@ -136,5 +85,95 @@ router.post("/webhook", async (req, res) => {
 
   res.sendStatus(404);
 });
+
+
+const sendCommandOptions = async (from) => {
+    const commands = [
+        { id: "/meepl", title: "Meepl" },
+        { id: "/review", title: "Review" },
+        { id: "/summary", title: "Summary" },
+        { id: "/showlists", title: "Show Lists" },
+        { id: "/help", title: "Help" },
+        { id: "/addjob", title: "Add Job" }
+    ];
+
+    const buttons = commands.map((cmd) => ({
+        type: "reply",
+        reply: {
+            id: cmd.id,
+            title: cmd.title
+        }
+    }));
+
+
+    await sendMessage({
+        number: from,
+        message: "📋 Select a command:",
+        type: "interactive",
+        buttons: buttons
+    });
+};
+
+
+const handleCommand = async (text, from ,profileName) => {
+    switch (text) {
+        case "/start meepl":
+          await sendTemplateMessage1({
+            number: from,
+            name: profileName,
+          });
+          break;
+        case "/review":
+          await sendMessage({
+            number: from,
+            name: profileName,
+            message: "📝 Here's a review of your task progress!",
+          });
+          break;
+        case "/summary":
+          await sendMessage({
+            number: from,
+            name: profileName,
+            message: "👁️ Here's your overall summary update.",
+          });
+          break;
+        case "/showlists":
+          await sendMessage({
+            number: from,
+            name: profileName,
+            message: "📋 Here are all your task lists.",
+          });
+          break;
+        // case "/":
+        //   await sendMessage({
+        //     number: from,
+        //     name: profileName,
+        //     message:
+        //       "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
+        //   });
+        //   break;
+        case "/addjob":
+          jobData[from] = { step: 0 }; //Initialize the job creation process
+          await sendMessage({
+            number: from,
+            message: "Let's add a new job!Please provide the Job Title.",
+          });
+          break;
+        default:
+          await sendMessage({
+            number: from,
+            name: profileName,
+            message:
+              "❓ Unknown command. Type / for a list of available commands.",
+          });
+      }
+}
+
+
+
+
+
+
+
 
 module.exports = router;

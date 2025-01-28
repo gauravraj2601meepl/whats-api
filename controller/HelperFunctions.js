@@ -64,7 +64,7 @@ exports.sendTemplateMessage2 = async (req) => {
         };
         const data = {
             messaging_product: "whatsapp",
-            to: "9779815877208", 
+            to: number, 
             type: "template",
             template: {
                 name: "hello_world", 
@@ -87,22 +87,40 @@ exports.sendTemplateMessage2 = async (req) => {
 // sendTextMessage()
 
 exports.sendMessage = async (req) => {
-    const {number, name, message} = req
+    const {number, name, message, type, buttons} = req
     try {
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
             "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
             "Content-Type": "application/json",
         };
-        const bodyText = name ? `${name} - ${message}` : message;
         const data = {
             messaging_product: "whatsapp",
             to: number, 
-            type: "text",
-            text: {
-                body: bodyText
-            }
         };
+
+        if (type === "interactive") {
+            // Handle interactive messages
+            data.type = "interactive";
+            data.interactive = {
+                type: "button",
+                body: {
+                    text: message || "Please select an option"
+                },
+                action: {
+                    buttons: buttons
+                }
+            };
+        }
+        else {
+            // Handle regular text messages
+            data.type = "text";
+            const bodyText = name ? `${name} - ${message}` : message;
+            data.text = {
+                body: bodyText
+            };
+        }
+
         const response = await axios.post(url,data,{headers});
         const res_data = response.data || 'Unknown';
         console.log("res_data_textMessage", res_data)
