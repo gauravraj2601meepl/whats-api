@@ -66,6 +66,7 @@ router.post("/webhook", async (req, res) => {
                 await sendListMessage({
                     number: from,
                     name: profileName
+
                 })
             }
             else if (text && text.startsWith("/")) {
@@ -149,6 +150,7 @@ const handleCommand = async (text, from ,profileName) => {
 
 const sendListMessage = async ({ number, name }) => {
     const listMessage = {
+      messaging_product: "whatsapp",
       to: number,
       type: 'interactive',
       interactive: {

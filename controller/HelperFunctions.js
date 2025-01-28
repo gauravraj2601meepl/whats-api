@@ -123,21 +123,27 @@ exports.sendMessage = async (req) => {
 
         const response = await axios.post(url,data,{headers});
         const res_data = response.data || 'Unknown';
-        console.log("res_data_textMessage", res_data)
+        console.log("res_data_sendMessage", res_data)
         
     } catch (err) {
-        console.log("err.messsages",err.message, "err.response.data",err.response?.data)
+        console.log("sendMessage_err.messsages",err.message, "sendMessage_err.response.data",err.response?.data)
     }
 }
 
 exports.sendWhatsAppMessage = async (data) => {
-    const url = `${process.env.WHATSAPP_API}/messages`;
-    const headers = {
-        "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
-        "Content-Type": "application/json",
-    };
-    const response = await axios.post(url,data,{headers});
-    return response.data;
+    try {
+        const url = `${process.env.WHATSAPP_API}/messages`;
+        const headers = {
+            "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+        };
+        const response = await axios.post(url,data,{headers});
+        console.log("res_data_sendWhatsAppMessage", res_data)
+        return response.data;
+    } catch (error) {
+        console.log("err.sendWhatsAppMessage",err.message, "sendWhatsAppMessage.response.data",err.response?.data)
+
+    }
   };
   
 
