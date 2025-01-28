@@ -40,16 +40,16 @@ router.post("/webhook", async (req, res) => {
         let newMessage;
         const messageData = change.value.messages;
         const contactData = change.value.contacts;
-
         if (contactData && contactData.length > 0) {
-          profileName = contactData[0].profile.name;
-          console.log("profileName:", profileName);
+            profileName = contactData[0].profile.name;
+            console.log("profileName:", profileName);
         }
-
+        
         if (messageData && messageData.length > 0) {
-          const message = messageData[0];
-          const from = message.from;
-          const text = message.text ? message.text.body : null;
+            const message = messageData[0];
+            const from = message.from;
+            const text = message.text ? message.text.body : null;
+            const interactiveData = message.interactive;
 
           newMessage = {
             from,
@@ -59,7 +59,11 @@ router.post("/webhook", async (req, res) => {
           console.log("Message saved:", newMessage);
 
           // Check if message starts with "/"
-            if (text === "/") {
+            if (interactiveData && interactiveData.button_reply) {
+                const selectedCommandId = interactiveData.button_reply.id
+                await handleCommand(selectedCommandId, from, contactData[0].profile.name)
+            }
+            else if (text === "/") {
                 await sendCommandOptions(from);
             }
             else if (text && text.startsWith("/")) {
