@@ -130,6 +130,16 @@ exports.sendMessage = async (req) => {
     }
 }
 
+exports.sendWhatsAppMessage = async (data) => {
+    const url = `${process.env.WHATSAPP_API}/messages`;
+    const headers = {
+        "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
+        "Content-Type": "application/json",
+    };
+    const response = await axios.post(url,data,{headers});
+    return response.data;
+  };
+  
 
 
 const uploadLogo = async (req, res) => {

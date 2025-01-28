@@ -10,6 +10,7 @@ const {
 const {
   sendTemplateMessage1,
   sendMessage,
+  sendWhatsAppMessage,
  
 } = require("../controller/HelperFunctions");
 const { handleAddJobFlow } = require("../controller/Helper/AddJobHelper");
@@ -61,14 +62,13 @@ router.post("/webhook", async (req, res) => {
           console.log("Message saved:", newMessage);
 
           // Check if message starts with "/"
-            // if (interactiveData && interactiveData.button_reply) {
-            //     const selectedCommandId = interactiveData.button_reply.id
-            //     await handleCommand(selectedCommandId, from, contactData[0].profile.name)
-            // }
-            // else if (text === "/") {
-            //     await sendCommandOptions(from);
-            // }
-             if (text && text.startsWith("/")) {
+            if (text === "/"){
+                await sendListMessage({
+                    number: from,
+                    name: profileName
+                })
+            }
+            else if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name)
 
@@ -85,66 +85,12 @@ router.post("/webhook", async (req, res) => {
         }
       });
     });
-
+    
     return res.status(200).send("EVENT_RECEIVED");
   }
-
+  
   res.sendStatus(404);
 });
-
-
-const sendCommandOptions = async (from) => {
-    const commands = [
-        { id: "/start meepl", title: "Meepl" },
-        { id: "/review", title: "Review" },
-        { id: "/summary", title: "Summary" },
-        { id: "/showlists", title: "Show Lists" },
-        { id: "/help", title: "Help" },
-        { id: "/addjob", title: "Add Job" }
-    ];
-
-    // Helper function to send messages in chunks
-    const sendInChunks = async (commandsChunk) => {
-        const buttons = commandsChunk.map((cmd) => ({
-            type: "reply",
-            reply: {
-                id: cmd.id,
-                title: cmd.title
-            }
-        }));
-
-        await sendMessage({
-            number: from,
-            message: "📋 Select a command:",
-            type: "interactive",
-            buttons: buttons
-        });
-    };
-
-    // Send the commands in chunks of 3
-    const chunkSize = 3;
-    for (let i = 0; i < commands.length; i += chunkSize) {
-        const chunk = commands.slice(i, i + chunkSize);
-        await sendInChunks(chunk);
-    }
-    // const maxButtons = 3;
-    // const limitedCommands = commands.slice(0, maxButtons);
-
-    // const buttons = limitedCommands.map((cmd) => ({
-    //     type: "reply",
-    //     reply: {
-    //         id: cmd.id,
-    //         title: cmd.title
-    //     }
-    // }));
-
-    // await sendMessage({
-    //     number: from,
-    //     message: "📋 Select a command:",
-    //     type: "interactive",
-    //     buttons: buttons
-    // });
-};
 
 
 const handleCommand = async (text, from ,profileName) => {
@@ -200,6 +146,117 @@ const handleCommand = async (text, from ,profileName) => {
           });
       }
 }
+
+const sendListMessage = async ({ number, name }) => {
+    const listMessage = {
+      to: number,
+      type: 'interactive',
+      interactive: {
+        type: 'list',
+        body: {
+          text: "ℹ️ Available Commands:",
+        },
+        action: {
+          button: "Choose a command",
+          sections: [
+            {
+              title: "Task Commands",
+              rows: [
+                {
+                  id: "1",
+                  title: "📝 Review Tasks",
+                  description: "Get a review of tasks",
+                },
+                {
+                  id: "2",
+                  title: "👁️ Summary",
+                  description: "Overall summary update",
+                },
+                {
+                  id: "3",
+                  title: "📋 Show Task Lists",
+                  description: "View your task lists",
+                },
+              ],
+            },
+            {
+              title: "Job Commands",
+              rows: [
+                {
+                  id: "4",
+                  title: "➕ Add Job",
+                  description: "Add a new job",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+  
+    await sendWhatsAppMessage(listMessage);
+  };
+const sendCommandOptions = async (from) => {
+     // if (interactiveData && interactiveData.button_reply) {
+            //     const selectedCommandId = interactiveData.button_reply.id
+            //     await handleCommand(selectedCommandId, from, contactData[0].profile.name)
+            // }
+            // else if (text === "/") {
+            //     await sendCommandOptions(from);
+            // }
+    const commands = [
+        { id: "/start meepl", title: "Meepl" },
+        { id: "/review", title: "Review" },
+        { id: "/summary", title: "Summary" },
+        { id: "/showlists", title: "Show Lists" },
+        { id: "/help", title: "Help" },
+        { id: "/addjob", title: "Add Job" }
+    ];
+
+    // Helper function to send messages in chunks
+    const sendInChunks = async (commandsChunk) => {
+        const buttons = commandsChunk.map((cmd) => ({
+            type: "reply",
+            reply: {
+                id: cmd.id,
+                title: cmd.title
+            }
+        }));
+
+        await sendMessage({
+            number: from,
+            message: "📋 Select a command:",
+            type: "interactive",
+            buttons: buttons
+        });
+    };
+
+    // Send the commands in chunks of 3
+    const chunkSize = 3;
+    for (let i = 0; i < commands.length; i += chunkSize) {
+        const chunk = commands.slice(i, i + chunkSize);
+        await sendInChunks(chunk);
+    }
+    // const maxButtons = 3;
+    // const limitedCommands = commands.slice(0, maxButtons);
+
+    // const buttons = limitedCommands.map((cmd) => ({
+    //     type: "reply",
+    //     reply: {
+    //         id: cmd.id,
+    //         title: cmd.title
+    //     }
+    // }));
+
+    // await sendMessage({
+    //     number: from,
+    //     message: "📋 Select a command:",
+    //     type: "interactive",
+    //     buttons: buttons
+    // });
+};
+
+
 
 
 
