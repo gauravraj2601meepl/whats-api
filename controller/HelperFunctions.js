@@ -84,7 +84,7 @@ exports.sendTemplateMessage2 = async (req) => {
 };
 
 
-// sendTextMessage()
+// sendTextMessage()  "WELCOME TO MEEPL! 🎉\nHi there! We're excited to get you onboarded.\n\nClick Start to begin your onboarding process."
 
 exports.sendMessage = async (req) => {
     const {number, name, message, type, buttons} = req
@@ -104,13 +104,15 @@ exports.sendMessage = async (req) => {
             data.type = "interactive";
             data.interactive = {
                 type: "button",
-                body: {
-                    text: message || "Please select an option"
-                },
                 action: {
                     buttons: buttons
                 }
             };
+            if (message) {
+                data.interactive.body= {
+                    text: message
+                }
+            }
         }
         else {
             // Handle regular text messages

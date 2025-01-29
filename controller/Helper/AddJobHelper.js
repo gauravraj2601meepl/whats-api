@@ -1,6 +1,66 @@
-const jobData = require("./JobDataStorage");
+const {jobData } = require("./JobDataStorage");
 
-exports.handleAddJobFlow = async (from, text, sendMessage) => {
+
+
+const getUserState = async (userId) => {
+  return jobData.userStates[userId]?.next || "start";
+};
+
+const updateUserState = async (userId, data) => {
+  jobData.userStates[userId] = { ...jobData.userStates[userId], ...data };
+};
+
+const handleUserResponse = async (text, from, sendMessage) => {
+    const userState = await getUserState(from); // Fetch user state from DB or memory
+    console.log("Current userStateeeee:", userState, "Received textttttt:", text);
+
+  
+    if (userState === "awaiting_first_name") {
+      await updateUserState(from, { firstName: text, next: "awaiting_last_name" });
+      await sendMessage({
+        number: from,
+        message: "Great! Now, please share your *Last Name*.",
+      });
+    } else if (userState === "awaiting_last_name") {
+      await updateUserState(from, { lastName: text, next: "awaiting_gender" });
+      await sendMessage({
+        number: from,
+        message: "Thanks! Please select your *Gender*:",
+        buttons: [
+          { id: "gender_male", title: "Male" },
+          { id: "gender_female", title: "Female" },
+          { id: "gender_nonbinary", title: "Non-Binary" },
+        ],
+      });
+    } else if (userState === "awaiting_gender") {
+      await updateUserState(from, { gender: text, next: "awaiting_mobile" });
+      await sendMessage({
+        number: from,
+        message: "Got it! Now, share your *Personal Mobile Number*.",
+      });
+    } else if (userState === "awaiting_mobile") {
+      await updateUserState(from, { mobile: text, next: "awaiting_email" });
+      await sendMessage({
+        number: from,
+        message: "Thanks! Please share your *Office Email Address*.",
+      });
+    } else if (userState === "awaiting_email") {
+      await updateUserState(from, { email: text, next: "awaiting_birth_date" });
+      await sendMessage({
+        number: from,
+        message: "Almost there! Please share your *Birth Date* (YYYY-MM-DD).",
+      });
+    } else if (userState === "awaiting_birth_date") {
+      await updateUserState(from, { birthDate: text, next: "completed" });
+      await sendMessage({
+        number: from,
+        message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process.",
+      });
+    }
+  };
+  
+
+const handleAddJobFlow = async (from, text, sendMessage) => {
     const userJobData = jobData[from];
 
     switch (userJobData.step) {
@@ -84,3 +144,13 @@ const parseModeOption = (text) => {
     const options = ["Remote", "On-site", "Hybrid"];
     return options[parseInt(text) - 1] || "Unknown";
 };
+
+
+
+module.exports = {
+    getUserState,
+    updateUserState,
+    handleUserResponse,
+    handleAddJobFlow
+}
+
