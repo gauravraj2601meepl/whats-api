@@ -61,13 +61,13 @@ router.post("/webhook", async (req, res) => {
           console.log("Message received:", newMessage);
 
           let userState;
-          const userId = from; // Ensure `from` is correctly set
-            if (!jobData.userStates[userId]) {
-                console.log("ifffff",jobData.userStates[userId])
-            }
-            else{
-                console.log("else", jobData.userStates[userId])
-            }
+        //   const userId = from; // Ensure `from` is correctly set
+        //     if (!jobData.userStates[userId]) {
+        //         console.log("ifffff",jobData.userStates[userId])
+        //     }
+        //     else{
+        //         console.log("else", jobData.userStates[userId])
+        //     }
           // Check if message starts with "/"
           if (text === "/") {
             await sendListMessage({
