@@ -1,3 +1,4 @@
+const Candidate = require("../../model/candidate.model");
 const {jobData, userDatas } = require("./JobDataStorage");
 
 
@@ -67,11 +68,25 @@ const handleUserResponse = async (text, from, sendMessage) => {
         case 6:
             if (text.toLowerCase() === "confirm") {
                 console.log("Candidate Data Submitted:", userData);
-                delete userDatas[from]; 
-                await sendMessage({
-                    number: from,
-                    message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
-                });
+                const newCandidate = new Candidate({
+                    firstName: userData?.firstName,
+                    lastName: userData?.lastName,
+                    gender: userData?.gender,
+                    mobile: userData?.mobile,
+                    email: userData?.email,
+                    birthDate: userData?.birthDate                   
+                })
+                try {
+                    await newCandidate.save();
+                    delete userDatas[from]; 
+                    await sendMessage({
+                        number: from,
+                        message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
+                    });
+                } catch (error) {
+                    console.error("error_CandidateDataSaving",error.message)
+                }
+                
             } else {
                 delete userDatas[from];
                 await sendMessage({
@@ -174,7 +189,6 @@ const parseModeOption = (text) => {
     const options = ["Remote", "On-site", "Hybrid"];
     return options[parseInt(text) - 1] || "Unknown";
 };
-
 
 
 module.exports = {

@@ -34,7 +34,7 @@ router.get("/webhook", (req, res) => {
 router.post("/webhook", async (req, res) => {
   const body = req.body;
 
-//   console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
+  console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
   if (body.object === "whatsapp_business_account") {
     body.entry.forEach(async (entry) => {
       entry.changes.forEach(async (change) => {
@@ -56,6 +56,7 @@ router.post("/webhook", async (req, res) => {
           newMessage = {
             from,
             text,
+            interactiveData,
             timestamp: new Date(),
           };
           console.log("Message received:", newMessage);
@@ -63,14 +64,7 @@ router.post("/webhook", async (req, res) => {
           console.log("jobDataa",jobData)
           console.log("userDatas", userDatas)
 
-        //   const userId = from; // Ensure `from` is correctly set
-        //     if (!jobData.userStates[userId]) {
-        //         console.log("ifffff",jobData.userStates[userId])
-        //     }
-        //     else{
-        //         console.log("else", jobData.userStates[userId])
-        //     }
-          // Check if message starts with "/"
+
           if (text === "/") {
             await sendListMessage({
               number: from,
