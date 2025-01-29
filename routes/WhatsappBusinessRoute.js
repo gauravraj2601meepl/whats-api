@@ -60,7 +60,9 @@ router.post("/webhook", async (req, res) => {
           };
           console.log("Message received:", newMessage);
 
-          let userState;
+          console.log("jobDataa",jobData)
+          console.log("userData", userData)
+
         //   const userId = from; // Ensure `from` is correctly set
         //     if (!jobData.userStates[userId]) {
         //         console.log("ifffff",jobData.userStates[userId])
