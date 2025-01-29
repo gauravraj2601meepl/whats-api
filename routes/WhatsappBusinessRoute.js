@@ -61,9 +61,6 @@ router.post("/webhook", async (req, res) => {
           console.log("Message saved:", newMessage);
 
           let userState;
-          if (jobData.userStates[from]) {
-            userState= await getUserState(from);
-          }
           // Check if message starts with "/"
           if (text === "/") {
             await sendListMessage({
@@ -83,12 +80,12 @@ router.post("/webhook", async (req, res) => {
             if (buttonId === "start_onboarding") {
                 // Update user state to "start"
                 await updateUserState(from, { next: "start" });
-  
                 // Send the first onboarding prompt
                 await sendMessage({
-                  number: from,
-                  message: "Welcome to Meepl! Please share your *First Name* to begin.",
+                    number: from,
+                    message: "Welcome to Meepl! Please share your *First Name* to begin.",
                 });
+                userState= await getUserState(from);
                 return;
               }
           } else if (text && text.startsWith("/")) {
