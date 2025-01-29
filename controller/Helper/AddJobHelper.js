@@ -74,7 +74,8 @@ const handleUserResponse = async (text, from, sendMessage) => {
                     gender: userData?.gender,
                     mobile: userData?.mobile,
                     email: userData?.email,
-                    birthDate: userData?.birthDate                   
+                    birthDate: userData?.birthDate,
+                    share_id: userData?.share_id                   
                 })
                 try {
                     await newCandidate.save();
