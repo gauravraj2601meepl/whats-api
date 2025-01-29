@@ -80,10 +80,10 @@ router.post("/webhook", async (req, res) => {
             );
           } else if (interactiveData && interactiveData.button_reply){
             const buttonId = interactiveData.button_reply.id;
-            const [start,onboarding,encryptVal] = buttonId.split("_")
+            const [start,onboarding,...encryptVal] = buttonId.split("_")
             if (`${start}_${onboarding}` === "start_onboarding") {
                 // Update user state to "start"
-                userDatas[from] = { step: 0, share_id: encryptVal };
+                userDatas[from] = { step: 0, share_id: encryptVal.join("_") };
                 // Send the first onboarding prompt
                 await sendMessage({
                     number: from,
