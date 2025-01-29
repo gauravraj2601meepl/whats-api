@@ -2,7 +2,7 @@ const {jobData, userDatas } = require("./JobDataStorage");
 
 
 const handleUserResponse = async (text, from, sendMessage) => {
-    const userData = userDatas[from];  // Accessing user data directly
+    const userData = userDatas[from];  
 
     switch (userData.step) {
         case 0:
@@ -60,17 +60,32 @@ const handleUserResponse = async (text, from, sendMessage) => {
             userData.step++;
             await sendMessage({
                 number: from,
-                message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process.",
+                message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName}\nGender: ${userData.gender}\nMobile: ${userData.mobile}\nEmail: ${userData.email}\n\nType 'Confirm' to submit or 'Cancel' to discard.`
+                
             });
             break;
-
+        case 6:
+            if (text.toLowerCase() === "confirm") {
+                console.log("Candidate Data Submitted:", userData);
+                delete userDatas[from]; 
+                await sendMessage({
+                    number: from,
+                    message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
+                });
+            } else {
+                delete userDatas[from];
+                await sendMessage({
+                    number: from,
+                    message: "❌ Candidate Onboarding canceled."
+                });
+            }
+            break;            
         default:
             await sendMessage({
                 number: from,
-                message: "An unexpected error occurred. Please restart the process.",
+                message: "An unexpected error occurred. Please restart the process /meepl onboarding G@R",
             });
-            // Reset user data if something goes wrong
-            delete jobData[from];
+            delete userDatas[from];
     }
 };
 
@@ -122,7 +137,7 @@ const handleAddJobFlow = async (from, text, sendMessage) => {
         case 5:
             if (text.toLowerCase() === "confirm") {
                 console.log("Job Data Submitted:", userJobData);
-                delete jobData[from]; // Clear the user's data
+                delete jobData[from];
                 await sendMessage({
                     number: from,
                     message: "✅ Your job post has been submitted successfully!"
