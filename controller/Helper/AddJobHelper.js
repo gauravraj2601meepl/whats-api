@@ -1,8 +1,8 @@
-const {jobData, userData } = require("./JobDataStorage");
+const {jobData, userDatas } = require("./JobDataStorage");
 
 
 const handleUserResponse = async (text, from, sendMessage) => {
-    const userData = userData[from];  // Accessing user data directly
+    const userData = userDatas[from];  // Accessing user data directly
 
     switch (userData.step) {
         case 0:

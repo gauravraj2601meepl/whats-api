@@ -13,7 +13,7 @@ const {
   sendWhatsAppMessage,
 } = require("../controller/HelperFunctions");
 const { getUserState, handleUserResponse, handleAddJobFlow, updateUserState } = require("../controller/Helper/AddJobHelper");
-const { jobData, userData } = require("../controller/Helper/JobDataStorage");
+const { jobData, userDatas } = require("../controller/Helper/JobDataStorage");
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 router.post("/sendMeeplInfo", sendTextMessagePreview);
@@ -86,7 +86,7 @@ router.post("/webhook", async (req, res) => {
             const buttonId = interactiveData.button_reply.id;
             if (buttonId === "start_onboarding") {
                 // Update user state to "start"
-                userData[from] = { step: 0 };
+                userDatas[from] = { step: 0 };
                 // Send the first onboarding prompt
                 await sendMessage({
                     number: from,
@@ -97,7 +97,7 @@ router.post("/webhook", async (req, res) => {
           } else if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name);
-          } else if (userData[from]) {
+          } else if (userDatas[from]) {
             await handleUserResponse(text, from, sendMessage)
           } else if (jobData[from]) {
             await handleAddJobFlow(from, text, sendMessage);
