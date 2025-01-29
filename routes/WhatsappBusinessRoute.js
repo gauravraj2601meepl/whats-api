@@ -60,7 +60,10 @@ router.post("/webhook", async (req, res) => {
           };
           console.log("Message saved:", newMessage);
 
-          const userState = await getUserState(from);
+          let userState;
+          if (jobData.userStates[from]) {
+            userState= await getUserState(from);
+          }
           // Check if message starts with "/"
           if (text === "/") {
             await sendListMessage({
