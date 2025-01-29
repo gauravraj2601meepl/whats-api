@@ -1,64 +1,79 @@
-const {jobData } = require("./JobDataStorage");
+const {jobData, userData } = require("./JobDataStorage");
 
-
-
-const getUserState = async (userId) => {
-  return jobData.userStates[userId]?.next || "start";
-};
-
-const updateUserState = async (userId, data) => {
-  jobData.userStates[userId] = { ...jobData.userStates[userId], ...data };
-};
 
 const handleUserResponse = async (text, from, sendMessage) => {
-    const userState = await getUserState(from); // Fetch user state from DB or memory
-    console.log("Current userStateeeee:", userState, "Received textttttt:", text);
+    const userData = userData[from];  // Accessing user data directly
 
-  
-    if (userState === "awaiting_first_name") {
-      await updateUserState(from, { firstName: text, next: "awaiting_last_name" });
-      await sendMessage({
-        number: from,
-        message: "Great! Now, please share your *Last Name*.",
-      });
-    } else if (userState === "awaiting_last_name") {
-      await updateUserState(from, { lastName: text, next: "awaiting_gender" });
-      await sendMessage({
-        number: from,
-        message: "Thanks! Please select your *Gender*:",
-        buttons: [
-          { id: "gender_male", title: "Male" },
-          { id: "gender_female", title: "Female" },
-          { id: "gender_nonbinary", title: "Non-Binary" },
-        ],
-      });
-    } else if (userState === "awaiting_gender") {
-      await updateUserState(from, { gender: text, next: "awaiting_mobile" });
-      await sendMessage({
-        number: from,
-        message: "Got it! Now, share your *Personal Mobile Number*.",
-      });
-    } else if (userState === "awaiting_mobile") {
-      await updateUserState(from, { mobile: text, next: "awaiting_email" });
-      await sendMessage({
-        number: from,
-        message: "Thanks! Please share your *Office Email Address*.",
-      });
-    } else if (userState === "awaiting_email") {
-      await updateUserState(from, { email: text, next: "awaiting_birth_date" });
-      await sendMessage({
-        number: from,
-        message: "Almost there! Please share your *Birth Date* (YYYY-MM-DD).",
-      });
-    } else if (userState === "awaiting_birth_date") {
-      await updateUserState(from, { birthDate: text, next: "completed" });
-      await sendMessage({
-        number: from,
-        message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process.",
-      });
+    switch (userData.step) {
+        case 0:
+            userData.firstName = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "Great! Now, please share your *Last Name*.",
+            });
+            break;
+
+        case 1:
+            userData.lastName = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "Thanks! Please select your *Gender*:",
+                buttons: [
+                    { id: "gender_male", title: "Male" },
+                    { id: "gender_female", title: "Female" },
+                    { id: "gender_nonbinary", title: "Non-Binary" },
+                ],
+            });
+            break;
+
+        case 2:
+            userData.gender = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "Got it! Now, share your *Personal Mobile Number*.",
+            });
+            break;
+
+        case 3:
+            userData.mobile = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "Thanks! Please share your *Office Email Address*.",
+            });
+            break;
+
+        case 4:
+            userData.email = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "Almost there! Please share your *Birth Date* (YYYY-MM-DD).",
+            });
+            break;
+
+        case 5:
+            userData.birthDate = text;
+            userData.step++;
+            await sendMessage({
+                number: from,
+                message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process.",
+            });
+            break;
+
+        default:
+            await sendMessage({
+                number: from,
+                message: "An unexpected error occurred. Please restart the process.",
+            });
+            // Reset user data if something goes wrong
+            delete jobData[from];
     }
-  };
-  
+};
+
 
 const handleAddJobFlow = async (from, text, sendMessage) => {
     const userJobData = jobData[from];
@@ -148,8 +163,6 @@ const parseModeOption = (text) => {
 
 
 module.exports = {
-    getUserState,
-    updateUserState,
     handleUserResponse,
     handleAddJobFlow
 }

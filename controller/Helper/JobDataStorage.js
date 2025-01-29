@@ -1,7 +1,5 @@
 // JobDataStorage.js
-const jobData = {
-    userStates: {},
-};
+const jobData = {};
+const userData= {}
 
-
-module.exports = {jobData};
+module.exports = {jobData, userData};
