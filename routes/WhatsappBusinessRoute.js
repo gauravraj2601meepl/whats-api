@@ -34,7 +34,7 @@ router.get("/webhook", (req, res) => {
 router.post("/webhook", async (req, res) => {
   const body = req.body;
 
-  console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
+//   console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
   if (body.object === "whatsapp_business_account") {
     body.entry.forEach(async (entry) => {
       entry.changes.forEach(async (change) => {
@@ -58,9 +58,16 @@ router.post("/webhook", async (req, res) => {
             text,
             timestamp: new Date(),
           };
-          console.log("Message saved:", newMessage);
+          console.log("Message received:", newMessage);
 
           let userState;
+          const userId = from; // Ensure `from` is correctly set
+            if (!jobData.userStates[userId]) {
+                console.log("ifffff",jobData.userStates[userId])
+            }
+            else{
+                console.log("else", jobData.userStates[userId])
+            }
           // Check if message starts with "/"
           if (text === "/") {
             await sendListMessage({
@@ -91,8 +98,8 @@ router.post("/webhook", async (req, res) => {
           } else if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name);
-          } else if (userState !== "completed" && 
-            ["start", "awaiting_first_name", "awaiting_last_name", "awaiting_gender", "awaiting_mobile", "awaiting_email", "awaiting_birth_date"].includes(userState)
+          } else if (jobData.userState[from] !== "completed" && 
+            ["start", "awaiting_first_name", "awaiting_last_name", "awaiting_gender", "awaiting_mobile", "awaiting_email", "awaiting_birth_date"].includes(jobData.userState[from])
           ) {
             await handleUserResponse(text, from, sendMessage)
           } else if (jobData[from]) {
