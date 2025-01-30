@@ -43,7 +43,7 @@ router.get("/webhook", (req, res) => {
 router.post("/webhook", async (req, res) => {
   const body = req.body;
 
-  //   console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
+    console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
   if (body.object === "whatsapp_business_account") {
     body.entry.forEach(async (entry) => {
       entry.changes.forEach(async (change) => {
