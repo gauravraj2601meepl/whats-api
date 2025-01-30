@@ -177,8 +177,8 @@ exports.sendTextMessagePreview = async (req, res) => {
       to: number,
       type: "image",
       image: {
-        // link: "https://meepldevstorage.nyc3.digitaloceanspaces.com/fulllogo.PNG",
         link: "https://i.ibb.co/zh38G0W/Untitled.png",
+        // link: "https://meepldevstorage.nyc3.digitaloceanspaces.com/fulllogo.PNG",
         caption:
           "Meepl \nhttps://wa.me/15551584583?text=%2Fstart%20meepl\n\nThank you for reaching out!",
       },
