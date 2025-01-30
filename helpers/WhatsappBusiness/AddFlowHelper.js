@@ -66,7 +66,6 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
         case 6:
             if (text.toLowerCase() === "confirm") {
-                console.log("Candidate Data Submitted:", userData);
                 const newCandidate = new Candidate_Module({
                     firstName: userData?.firstName,
                     lastName: userData?.lastName,
@@ -78,13 +77,14 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                 })
                 try {
                     await newCandidate.save();
+                    console.log("newCandidate Saved:", userData);
                     delete userDatas[from]; 
                     await sendMessage({
                         number: from,
                         message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
                     });
                 } catch (error) {
-                    console.error("error_CandidateDataSaving",error.message)
+                    console.error("error_newCandidate Saved:",error.message)
                 }
                 
             } else {
@@ -151,7 +151,7 @@ const handleAddJobFlow = async (from, text, sendMessage) => {
             break;
         case 5:
             if (text.toLowerCase() === "confirm") {
-                console.log("Job Data Submitted:", userJobData);
+                console.log("new Job Saved:", userJobData);
                 delete jobDatas[from];
                 await sendMessage({
                     number: from,

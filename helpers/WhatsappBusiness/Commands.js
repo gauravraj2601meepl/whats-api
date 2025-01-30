@@ -1,5 +1,6 @@
 const { sendWhatsAppMessage, sendMessage } = require("./MessageHelper");
 const { sendTemplateMessage1 } = require("./MessageTemplate");
+const { jobDatas } = require("./ResponseDataStorage");
 
 
 exports.handleCommand = async (text, from, profileName) => {
@@ -7,7 +8,7 @@ exports.handleCommand = async (text, from, profileName) => {
     const command = text?.match(regex)?.[0]; 
     
     if (command === "/meepl onboarding") {
-        const encVal = text.replace(command, "").trim();
+        const encVal = text?.replace(command, "")?.trim();
 
         if (encVal) {
           await sendMessage({

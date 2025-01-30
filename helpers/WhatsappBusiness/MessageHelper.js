@@ -1,5 +1,8 @@
 const { default: axios } = require("axios");
-const { sendTemplateMessage1, sendTemplateMessage2 } = require("./MessageTemplate");
+const {
+  sendTemplateMessage1,
+  sendTemplateMessage2,
+} = require("./MessageTemplate");
 require("dotenv").config();
 
 exports.sendWhatsAppMessage = async (data) => {
@@ -11,15 +14,10 @@ exports.sendWhatsAppMessage = async (data) => {
     };
     const response = await axios.post(url, data, { headers });
     const res_data = response.data || "Unknown";
-    console.log("res_data_sendWhatsAppMessage", res_data);
-    return response.data;
+    console.log("res_sendWhatsAppMessage", res_data);
+    return res_data;
   } catch (err) {
-    console.log(
-      "err.sendWhatsAppMessage",
-      err.message,
-      "sendWhatsAppMessage.response.data",
-      err.response?.data
-    );
+    console.log("err_sendWhatsAppMessage", err.message, err.response?.data);
   }
 };
 
@@ -61,20 +59,16 @@ exports.sendMessage = async (req) => {
 
     const response = await axios.post(url, data, { headers });
     const res_data = response.data || "Unknown";
-    console.log("res_data_sendMessage", res_data);
+    console.log("res_sendMessage", res_data);
+    return res_data;
   } catch (err) {
-    console.log(
-      "sendMessage_err.messsages",
-      err.message,
-      "sendMessage_err.response.data",
-      err.response?.data
-    );
+    console.log("err_sendMessage", err.message, err.response?.data);
+    return err.message;
   }
 };
 
 exports.sendTemplateMessage = async (req, res) => {
   const { number, name, template } = req.body;
-  console.log("Template:", template, "Number:", number, "Name:", name);
 
   try {
     let responseData;
@@ -93,40 +87,38 @@ exports.sendTemplateMessage = async (req, res) => {
       });
     }
 
-     // Extract relevant data from the response
-     if (responseData.statuscode === 200) {
+    // Extract relevant data from the response
+    if (responseData.statuscode === 200) {
       return res.status(200).json({
-          statuscode: 200,
-          status: "success",
-          template: `${template} sent to ${number}`,
-          data: responseData.data,
-          error: [{ message: "", errorcode: "" }],
+        statuscode: 200,
+        status: "success",
+        template: `${template} sent to ${number}`,
+        data: responseData.data,
+        error: [{ message: "", errorcode: "" }],
       });
-  } else {
+    } else {
       return res.status(500).json({
-          statuscode: 500,
-          status: "failed",
-          template: template,
-          data: null,
-          error: responseData.error,
+        statuscode: 500,
+        status: "failed",
+        template: template,
+        data: null,
+        error: responseData.error,
       });
-  }
+    }
   } catch (err) {
-    console.error("WhatsApp API Error Template:", err?.message, err?.response?.data);
-
-        res.status(500).json({
-            statuscode: 500,
-            status: "failed",
-            template: template,
-            data: null,
-            error: [
-                {
-                    message: err?.message || "Unknown error",
-                    errorcode: err?.response?.status || 500,
-                    details: err?.response?.data || {},
-                },
-            ],
-        });
+    res.status(500).json({
+      statuscode: 500,
+      status: "failed",
+      template: template,
+      data: null,
+      error: [
+        {
+          message: err?.message || "Unknown error",
+          errorcode: err?.response?.status || 500,
+          details: err?.response?.data || {},
+        },
+      ],
+    });
   }
 };
 /////////////////////
@@ -149,7 +141,6 @@ exports.sendTextMessage = async (req, res) => {
     };
     const response = await axios.post(url, data, { headers });
     const res_data = response.data || "Unknown";
-    console.log("res_data_textMessage", res_data);
     return res.status(200).json({
       statuscode: 200,
       status: "success",
@@ -157,12 +148,18 @@ exports.sendTextMessage = async (req, res) => {
       error: [{ message: "", errorcode: "" }],
     });
   } catch (err) {
-    console.log("errWhatsAppRes", err, err.message, err.response?.data);
     res.status(500).json({
       statuscode: 500,
       status: "failed",
+      template: template,
       data: null,
-      error: [{ message: err.message, errorcode: 500 }],
+      error: [
+        {
+          message: err?.message || "Unknown error",
+          errorcode: err?.response?.status || 500,
+          details: err?.response?.data || {},
+        },
+      ],
     });
   }
 };
@@ -180,14 +177,14 @@ exports.sendTextMessagePreview = async (req, res) => {
       to: number,
       type: "image",
       image: {
-        // link: "https://meepldevstorage.nyc3.digitaloceanspaces.com/fulllogo.PNG", 
-        link: "https://i.ibb.co/zh38G0W/Untitled.png", 
-        caption: "Meepl \nhttps://wa.me/15551584583?text=%2Fstart%20meepl\n\nThank you for reaching out!", 
+        // link: "https://meepldevstorage.nyc3.digitaloceanspaces.com/fulllogo.PNG",
+        link: "https://i.ibb.co/zh38G0W/Untitled.png",
+        caption:
+          "Meepl \nhttps://wa.me/15551584583?text=%2Fstart%20meepl\n\nThank you for reaching out!",
       },
     };
     const response = await axios.post(url, data, { headers });
     const res_data = response.data || "Unknown";
-    console.log("res_data_textMessage", res_data);
     return res.status(200).json({
       statuscode: 200,
       status: "success",
@@ -195,12 +192,18 @@ exports.sendTextMessagePreview = async (req, res) => {
       error: [{ message: "", errorcode: "" }],
     });
   } catch (err) {
-    console.log("errWhatsAppRes", err.message, err.response?.data);
     res.status(500).json({
       statuscode: 500,
       status: "failed",
+      template: template,
       data: null,
-      error: [{ message: err.message, errorcode: 500 }],
+      error: [
+        {
+          message: err?.message || "Unknown error",
+          errorcode: err?.response?.status || 500,
+          details: err?.response?.data || {},
+        },
+      ],
     });
   }
 };

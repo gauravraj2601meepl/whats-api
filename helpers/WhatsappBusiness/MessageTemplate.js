@@ -2,10 +2,9 @@ const { default: axios } = require("axios");
 require("dotenv").config();
 
 
-exports.sendTemplateMessage1 = async (req,res) => {
+exports.sendTemplateMessage1 = async (req) => {
     try {
         const {number, name} = req
-        console.log("Sending meepl_welcome template message to:", number, name);
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
             "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -13,7 +12,7 @@ exports.sendTemplateMessage1 = async (req,res) => {
         };
         const data = {
             messaging_product: "whatsapp",
-            to: number, // recipient's phone number
+            to: number,
             type: "template",
             template: {
                 name: "meepl_welcome",
@@ -45,7 +44,6 @@ exports.sendTemplateMessage1 = async (req,res) => {
             },
         };
         const response = await axios.post(url,data,{headers});
-        console.log("WhatsApp API Response meepl_welcome template:", response.data);
         return {
             statuscode: 200,
             status: "success_meepl_welcome",
@@ -54,7 +52,6 @@ exports.sendTemplateMessage1 = async (req,res) => {
         };
         
     } catch (err) {
-        console.error("WhatsApp API Error meepl_welcome template:", err?.message, err?.response?.data);
         return {
             statuscode: 500,
             status: "failed",
@@ -72,7 +69,6 @@ exports.sendTemplateMessage1 = async (req,res) => {
 
 exports.sendTemplateMessage2 = async (req) => {
     const {number, name} = req
-    console.log("Sending hello_world template to:", number, name);
     try {
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
@@ -91,7 +87,6 @@ exports.sendTemplateMessage2 = async (req) => {
             },
         };
         const response = await axios.post(url,data,{headers});
-        console.log("WhatsApp API Response hello_world template:", response.data);
         return {
             statuscode: 200,
             status: "success_hello_world",
@@ -99,8 +94,6 @@ exports.sendTemplateMessage2 = async (req) => {
             error: [{ message: "", errorcode: "" }],
         };
     } catch (err) {
-        console.error("WhatsApp API Error hello_world template::", err?.message, err?.response?.data);
-
         return {
             statuscode: 500,
             status: "failed_hello_world",
