@@ -2,23 +2,32 @@ const express = require("express");
 
 const router = express.Router();
 
+// done
 const {
-  sendTemplateMessage,
+  sendWhatsAppMessage,
+  sendMessage,
   sendTextMessage,
   sendTextMessagePreview,
-} = require("../controller/WhatsappTestController");
+  sendTemplateMessage,
+} = require("../helpers/WhatsappBusiness/MessageHelper");
 const {
   sendTemplateMessage1,
-  sendMessage,
-  sendWhatsAppMessage,
-} = require("../controller/HelperFunctions");
-const { handleUserResponse, handleAddJobFlow } = require("../controller/Helper/AddJobHelper");
-const { jobData, userDatas } = require("../controller/Helper/JobDataStorage");
+} = require("../helpers/WhatsappBusiness/MessageTemplate");
+const {
+  handleAddUserFlow,
+  handleAddJobFlow,
+} = require("../helpers/WhatsappBusiness/AddFlowHelper");
+const {
+  jobDatas,
+  userDatas,
+} = require("../helpers/WhatsappBusiness/ResponseDataStorage");
+
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 router.post("/sendMeeplInfo", sendTextMessagePreview);
+
 router.get("/webhook", (req, res) => {
-  const VERIFY_TOKEN = "meepl";
+  const VERIFY_TOKEN = process.env.WEBHOOK_CONFIG_TOKEN;
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
@@ -34,7 +43,7 @@ router.get("/webhook", (req, res) => {
 router.post("/webhook", async (req, res) => {
   const body = req.body;
 
-//   console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
+  //   console.log("req.bodyMain", JSON.stringify(body.entry[0].changes[0], null, 2));
   if (body.object === "whatsapp_business_account") {
     body.entry.forEach(async (entry) => {
       entry.changes.forEach(async (change) => {
@@ -61,42 +70,41 @@ router.post("/webhook", async (req, res) => {
           };
           console.log("Message received:", newMessage);
 
-          console.log("jobDataa",jobData)
-          console.log("userDatas", userDatas)
-
+          console.log("jobDataa", jobDatas);
+          console.log("userDatas", userDatas);
 
           if (text === "/") {
             await sendListMessage({
               number: from,
               name: profileName,
             });
-          } 
-           else if (interactiveData && interactiveData.list_reply){
+          } else if (interactiveData && interactiveData.list_reply) {
             const selectedCommandId = interactiveData.list_reply.id;
             await handleCommand(
               selectedCommandId,
               from,
               contactData[0].profile.name
             );
-          } else if (interactiveData && interactiveData.button_reply){
+          } else if (interactiveData && interactiveData.button_reply) {
             const buttonId = interactiveData.button_reply.id;
-            const [start,onboarding,...encryptVal] = buttonId.split("_")
+            const [start, onboarding, ...encryptVal] = buttonId.split("_");
             if (`${start}_${onboarding}` === "start_onboarding") {
-                // Update user state to "start"
-                userDatas[from] = { step: 0, share_id: encryptVal.join("_") };
-                // Send the first onboarding prompt
-                await sendMessage({
-                    number: from,
-                    message: "Welcome to Meepl! Please share your *First Name* to begin.",
-                });
-                return;
-              }
+              // Update user state to "start"
+              userDatas[from] = { step: 0, share_id: encryptVal.join("_") };
+              // Send the first onboarding prompt
+              await sendMessage({
+                number: from,
+                message:
+                  "Welcome to Meepl! Please share your *First Name* to begin.",
+              });
+              return;
+            }
           } else if (text && text.startsWith("/")) {
             // Handle different commands
             await handleCommand(text, from, contactData[0].profile.name);
           } else if (userDatas[from]) {
-            await handleUserResponse(text, from, sendMessage)
-          } else if (jobData[from]) {
+            await handleAddUserFlow(text, from, sendMessage);
+          } else if (jobDatas[from]) {
             await handleAddJobFlow(from, text, sendMessage);
           } else {
             // If the message is not a command, show a default message
@@ -117,87 +125,89 @@ router.post("/webhook", async (req, res) => {
 });
 
 const handleCommand = async (text, from, profileName) => {
-    const regex = /^\/meepl onboarding/;
-    const command = text.match(regex)[0]; 
-    
-    if (command === "/meepl onboarding") {
-        const encVal = text.replace(command, "").trim();
+  const regex = /^\/meepl onboarding/;
+  const command = text.match(regex)[0];
 
-        if (encVal) {
-          await sendMessage({
-              number: from,
-              type: "interactive", 
-              message:
-                "WELCOME TO MEEPL! 🎉\nHi there! We're excited to get you onboarded.\n\nClick Start to begin your onboarding process.",
-              buttons: [
-                  { type: "reply",
-                      reply: {
-                          id: `start_onboarding_${encVal}`,
-                          title: "Start"
-                      }
-                  }
-              ],
-            });
-        } else {
-          // If no dynamic part is provided
-          await sendMessage({
-            number: from,
-            message: "❌ Please provide a valid identifier after '/meepl onboarding'.",
-          });
-        }
-      }
-      else {
-        switch (text) {
-          case "/start meepl":
-            await sendTemplateMessage1({
-              number: from,
-              name: profileName,
-            });
-            break;
-          case "/review":
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message: "📝 Here's a review of your task progress!",
-            });
-            break;
-          case "/summary":
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message: "👁️ Here's your overall summary update.",
-            });
-            break;
-          case "/showlists":
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message: "📋 Here are all your task lists.",
-            });
-            break;
-          case "/":
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message:
-                "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
-            });
-            break;
-          case "/addjob":
-            jobData[from] = { step: 0 }; //Initialize the job creation process
-            await sendMessage({
-              number: from,
-              message: "Let's add a new job!Please provide the Job Title.",
-            });
-            break;
-          default:
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message: "❓ Unknown command. Type / for a list of available commands.",
-            });
-        }
-      }
+  if (command === "/meepl onboarding") {
+    const encVal = text.replace(command, "").trim();
+
+    if (encVal) {
+      await sendMessage({
+        number: from,
+        type: "interactive",
+        message:
+          "WELCOME TO MEEPL! 🎉\nHi there! We're excited to get you onboarded.\n\nClick Start to begin your onboarding process.",
+        buttons: [
+          {
+            type: "reply",
+            reply: {
+              id: `start_onboarding_${encVal}`,
+              title: "Start",
+            },
+          },
+        ],
+      });
+    } else {
+      // If no dynamic part is provided
+      await sendMessage({
+        number: from,
+        message:
+          "❌ Please provide a valid identifier after '/meepl onboarding'.",
+      });
+    }
+  } else {
+    switch (text) {
+      case "/start meepl":
+        await sendTemplateMessage1({
+          number: from,
+          name: profileName,
+        });
+        break;
+      case "/review":
+        await sendMessage({
+          number: from,
+          name: profileName,
+          message: "📝 Here's a review of your task progress!",
+        });
+        break;
+      case "/summary":
+        await sendMessage({
+          number: from,
+          name: profileName,
+          message: "👁️ Here's your overall summary update.",
+        });
+        break;
+      case "/showlists":
+        await sendMessage({
+          number: from,
+          name: profileName,
+          message: "📋 Here are all your task lists.",
+        });
+        break;
+      case "/":
+        await sendMessage({
+          number: from,
+          name: profileName,
+          message:
+            "ℹ️ Available Commands:\n/review - Get a review of tasks\n/summary - Overall update\n/showlists - Task lists\n/addjob -Add Job",
+        });
+        break;
+      case "/addjob":
+        jobDatas[from] = { step: 0 }; //Initialize the job creation process
+        await sendMessage({
+          number: from,
+          message: "Let's add a new job!Please provide the Job Title.",
+        });
+        break;
+      default:
+        await sendMessage({
+          number: from,
+          name: profileName,
+          message:
+            "❓ Unknown command. Type / for a list of available commands.",
+        });
+    }
+  }
 };
 
 const sendListMessage = async ({ number, name }) => {

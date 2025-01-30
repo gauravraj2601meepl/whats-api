@@ -1,11 +1,76 @@
 const { default: axios } = require("axios");
 require("dotenv").config();
-const fs = require("fs");
-const {
-  sendTemplateMessage2,
-  sendTemplateMessage1,
-} = require("./HelperFunctions");
-// WHATSAPP_TOKEN
+
+exports.sendWhatsAppMessage = async (data) => {
+  try {
+    const url = `${process.env.WHATSAPP_API}/messages`;
+    const headers = {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    };
+    const response = await axios.post(url, data, { headers });
+    const res_data = response.data || "Unknown";
+    console.log("res_data_sendWhatsAppMessage", res_data);
+    return response.data;
+  } catch (err) {
+    console.log(
+      "err.sendWhatsAppMessage",
+      err.message,
+      "sendWhatsAppMessage.response.data",
+      err.response?.data
+    );
+  }
+};
+
+exports.sendMessage = async (req) => {
+  const { number, name, message, type, buttons } = req;
+  try {
+    const url = `${process.env.WHATSAPP_API}/messages`;
+    const headers = {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    };
+    const data = {
+      messaging_product: "whatsapp",
+      to: number,
+    };
+
+    if (type === "interactive") {
+      // Handle interactive messages
+      data.type = "interactive";
+      data.interactive = {
+        type: "button",
+        action: {
+          buttons: buttons,
+        },
+      };
+      if (message) {
+        data.interactive.body = {
+          text: message,
+        };
+      }
+    } else {
+      // Handle regular text messages
+      data.type = "text";
+      const bodyText = name ? `${name} - ${message}` : message;
+      data.text = {
+        body: bodyText,
+      };
+    }
+
+    const response = await axios.post(url, data, { headers });
+    const res_data = response.data || "Unknown";
+    console.log("res_data_sendMessage", res_data);
+  } catch (err) {
+    console.log(
+      "sendMessage_err.messsages",
+      err.message,
+      "sendMessage_err.response.data",
+      err.response?.data
+    );
+  }
+};
+
 exports.sendTemplateMessage = async (req, res) => {
   const { number, name, template } = req.body;
   console.log("Template:", template, "Number:", number, "Name:", name);

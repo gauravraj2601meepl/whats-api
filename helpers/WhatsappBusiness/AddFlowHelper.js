@@ -1,8 +1,7 @@
-const Candidate = require("../../model/candidate.model");
-const {jobData, userDatas } = require("./JobDataStorage");
+const Candidate_Module = require("../../models/WhatsappBusiness/Candidate");
+const { userDatas, jobDatas } = require("./ResponseDataStorage");
 
-
-const handleUserResponse = async (text, from, sendMessage) => {
+const handleAddUserFlow = async (text, from, sendMessage) => {
     const userData = userDatas[from];  
 
     switch (userData.step) {
@@ -68,7 +67,7 @@ const handleUserResponse = async (text, from, sendMessage) => {
         case 6:
             if (text.toLowerCase() === "confirm") {
                 console.log("Candidate Data Submitted:", userData);
-                const newCandidate = new Candidate({
+                const newCandidate = new Candidate_Module({
                     firstName: userData?.firstName,
                     lastName: userData?.lastName,
                     gender: userData?.gender,
@@ -107,7 +106,7 @@ const handleUserResponse = async (text, from, sendMessage) => {
 
 
 const handleAddJobFlow = async (from, text, sendMessage) => {
-    const userJobData = jobData[from];
+    const userJobData = jobDatas[from];
 
     switch (userJobData.step) {
         case 0:
@@ -153,13 +152,13 @@ const handleAddJobFlow = async (from, text, sendMessage) => {
         case 5:
             if (text.toLowerCase() === "confirm") {
                 console.log("Job Data Submitted:", userJobData);
-                delete jobData[from];
+                delete jobDatas[from];
                 await sendMessage({
                     number: from,
                     message: "✅ Your job post has been submitted successfully!"
                 });
             } else {
-                delete jobData[from];
+                delete jobDatas[from];
                 await sendMessage({
                     number: from,
                     message: "❌ Job post creation canceled."
@@ -171,7 +170,7 @@ const handleAddJobFlow = async (from, text, sendMessage) => {
                 number: from,
                 message: "An unexpected error occurred. Please restart the process with /addjob."
             });
-            delete jobData[from];
+            delete jobDatas[from];
     }
 };
 
@@ -193,7 +192,7 @@ const parseModeOption = (text) => {
 
 
 module.exports = {
-    handleUserResponse,
+    handleAddUserFlow,
     handleAddJobFlow
 }
 
