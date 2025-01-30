@@ -77,13 +77,13 @@ exports.sendTemplateMessage = async (req, res) => {
   console.log("Template:", template, "Number:", number, "Name:", name);
 
   try {
-    let res_data;
+    let responseData;
 
     // Based on the template, call the respective function
     if (template === "hello_world") {
-      res_data = await sendTemplateMessage2({ number, name });
+      responseData = await sendTemplateMessage2({ number, name });
     } else if (template === "meepl_welcome") {
-      res_data = await sendTemplateMessage1({ number, name });
+      responseData = await sendTemplateMessage1({ number, name });
     } else {
       return res.status(400).json({
         statuscode: 400,
@@ -92,30 +92,41 @@ exports.sendTemplateMessage = async (req, res) => {
         error: [{ message: "Invalid template name", errorcode: 400 }],
       });
     }
-    return res.status(200).json({
-      statuscode: 200,
-      status: "success",
-      template: `${template} to ${number}`,
-      data: res_data || "validation error",
-      error: res_data
-        ? null
-        : [
-            {
-              status: res?.response?.data?.error?.message,
-              message: res?.response?.error,
-              errorcode: res?.response?.data?.error?.error_subcode,
-            },
-          ],
-    });
+
+     // Extract relevant data from the response
+     if (responseData.statuscode === 200) {
+      return res.status(200).json({
+          statuscode: 200,
+          status: "success",
+          template: `${template} sent to ${number}`,
+          data: responseData.data,
+          error: [{ message: "", errorcode: "" }],
+      });
+  } else {
+      return res.status(500).json({
+          statuscode: 500,
+          status: "failed",
+          template: template,
+          data: null,
+          error: responseData.error,
+      });
+  }
   } catch (err) {
-    console.log("errWhatsAppRes", err, err.message, err.response?.data);
-    res.status(500).json({
-      statuscode: 500,
-      status: "failed",
-      template: template,
-      data: null,
-      error: [{ message: err.message || err.response?.data, errorcode: 500 }],
-    });
+    console.error("WhatsApp API Error Template:", err?.message, err?.response?.data);
+
+        res.status(500).json({
+            statuscode: 500,
+            status: "failed",
+            template: template,
+            data: null,
+            error: [
+                {
+                    message: err?.message || "Unknown error",
+                    errorcode: err?.response?.status || 500,
+                    details: err?.response?.data || {},
+                },
+            ],
+        });
   }
 };
 /////////////////////

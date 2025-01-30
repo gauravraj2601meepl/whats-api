@@ -5,7 +5,7 @@ require("dotenv").config();
 exports.sendTemplateMessage1 = async (req,res) => {
     try {
         const {number, name} = req
-        console.log("nameeeee", number, name)
+        console.log("Sending meepl_welcome template message to:", number, name);
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
             "Authorization": `Bearer ${process.env.WHATSAPP_TOKEN}`,
@@ -45,19 +45,34 @@ exports.sendTemplateMessage1 = async (req,res) => {
             },
         };
         const response = await axios.post(url,data,{headers});
-        console.log("res_data", response.res_data)
-        return res_data = response.data || 'Unknown';
+        console.log("WhatsApp API Response meepl_welcome template:", response.data);
+        return {
+            statuscode: 200,
+            status: "success_meepl_welcome",
+            data: response.data,
+            error: [{ message: "", errorcode: "" }],
+        };
         
     } catch (err) {
-        // Handle any errors that occur
-        console.log("errWhatsAppRes", err?.message, err?.response?.data)
-       
+        console.error("WhatsApp API Error meepl_welcome template:", err?.message, err?.response?.data);
+        return {
+            statuscode: 500,
+            status: "failed",
+            data: null,
+            error: [
+                {
+                    message: err?.message || "Unknown error",
+                    errorcode: err?.response?.status || 500,
+                    details: err?.response?.data || {},
+                },
+            ],
+        };
     }
 };
 
 exports.sendTemplateMessage2 = async (req) => {
     const {number, name} = req
-    console.log("numberrrrrrrrrrrr", number, name)
+    console.log("Sending hello_world template to:", number, name);
     try {
         const url = `${process.env.WHATSAPP_API}/messages`;
         const headers = {
@@ -76,11 +91,27 @@ exports.sendTemplateMessage2 = async (req) => {
             },
         };
         const response = await axios.post(url,data,{headers});
-        console.log("res_data", response.res_data)
-        return res_data = response.data || 'Unknown';
-       
+        console.log("WhatsApp API Response hello_world template:", response.data);
+        return {
+            statuscode: 200,
+            status: "success_hello_world",
+            data: response.data,
+            error: [{ message: "", errorcode: "" }],
+        };
     } catch (err) {
-        console.log("errWhatsAppRes", err?.message, err?.response?.data)
-       
+        console.error("WhatsApp API Error hello_world template::", err?.message, err?.response?.data);
+
+        return {
+            statuscode: 500,
+            status: "failed_hello_world",
+            data: null,
+            error: [
+                {
+                    message: err?.message || "Unknown error",
+                    errorcode: err?.response?.status || 500,
+                    details: err?.response?.data || {},
+                },
+            ],
+        };
     }
 };
