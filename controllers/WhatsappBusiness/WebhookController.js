@@ -1,7 +1,16 @@
-const { handleAddUserFlow, handleAddJobFlow } = require("../../helpers/WhatsappBusiness/AddFlowHelper");
-const { sendListMessage, handleCommand } = require("../../helpers/WhatsappBusiness/Commands");
+const {
+  handleAddUserFlow,
+  handleAddJobFlow,
+} = require("../../helpers/WhatsappBusiness/AddFlowHelper");
+const {
+  sendListMessage,
+  handleCommand,
+} = require("../../helpers/WhatsappBusiness/Commands");
 const { sendMessage } = require("../../helpers/WhatsappBusiness/MessageHelper");
-const { userDatas, jobDatas } = require("../../helpers/WhatsappBusiness/ResponseDataStorage");
+const {
+  userDatas,
+  jobDatas,
+} = require("../../helpers/WhatsappBusiness/ResponseDataStorage");
 require("dotenv").config();
 
 exports.webhookConfiguration = async (req, res) => {
@@ -45,59 +54,51 @@ exports.webhookHandler = async (req, res) => {
           const messageData = change.value.messages;
           const contactData = change.value.contacts;
           const profileName = contactData?.[0]?.profile?.name || "";
-          const message = messageData?.[0];
-          const from = message?.from;
-          const text = message?.text?.body || null;
-          const interactiveData = message?.interactive;
 
-          
+          if (messageData && messageData.length > 0) {
+            const message = messageData[0];
+            const from = message?.from;
+            const text = message?.text?.body || null;
+            const interactiveData = message?.interactive;
 
-          console.log("Message received:", { from, text, interactiveData });
+            console.log("Message received:", { from, text, interactiveData });
 
-          if (text === "/") {
-            await sendListMessage({
-              number: from,
-              name: profileName,
-            });
-            console.log("inside / ")
-          } else if (interactiveData?.list_reply) {
-            const selectedCommandId = interactiveData.list_reply.id;
-            await handleCommand(
-              selectedCommandId,
-              from,
-              profileName
-            );
-            console.log("inside Command_list-reply")
-          } else if (interactiveData?.button_reply) {
-            const buttonId = interactiveData.button_reply.id.split("_");
-            if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
-                userDatas[from] = { step: 0, share_id: buttonId.slice(2).join("_") };
+            if (text === "/") {
+              await sendListMessage({
+                number: from,
+                name: profileName,
+              });
+            } else if (interactiveData?.list_reply) {
+              const selectedCommandId = interactiveData.list_reply.id;
+              await handleCommand(selectedCommandId, from, profileName);
+            } else if (interactiveData?.button_reply) {
+              const buttonId = interactiveData.button_reply.id.split("_");
+              if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
+                userDatas[from] = {
+                  step: 0,
+                  share_id: buttonId.slice(2).join("_"),
+                };
                 await sendMessage({
-                    number: from,
-                    message: "Welcome to Meepl! Please share your *First Name* to begin.",
+                  number: from,
+                  message:
+                    "Welcome to Meepl! Please share your *First Name* to begin.",
                 });
                 return;
+              }
+            } else if (text?.startsWith("/")) {
+              await handleCommand(text, from, profileName);
+            } else if (userDatas[from]) {
+              await handleAddUserFlow(text, from, sendMessage);
+            } else if (jobDatas[from]) {
+              await handleAddJobFlow(from, text, sendMessage);
+            } else {
+              await sendMessage({
+                number: from,
+                name: profileName,
+                message: "👋 Welcome! Type / to see the available commands.",
+              });
             }
-            console.log("inside button-reply")
-          } else if (text?.startsWith("/")) {
-            await handleCommand(text, from, profileName);
-            console.log("inside / commands any")
-          } else if (userDatas[from]) {
-            await handleAddUserFlow(text, from, sendMessage);
-            console.log("inside userData(from)")
-          } else if (jobDatas[from]) {
-            await handleAddJobFlow(from, text, sendMessage);
-            console.log("inside Add job flow")
-          } else {
-            await sendMessage({
-              number: from,
-              name: profileName,
-              message: "👋 Welcome! Type / to see the available commands.",
-            });
-            console.log("eleeeeeeeeeeeeeeeeeeeeeeeeeee")
           }
-
-
         });
       });
 
@@ -124,5 +125,3 @@ exports.webhookHandler = async (req, res) => {
     });
   }
 };
-
-
