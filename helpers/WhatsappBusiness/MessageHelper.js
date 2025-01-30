@@ -1,4 +1,5 @@
 const { default: axios } = require("axios");
+const { sendTemplateMessage1, sendTemplateMessage2 } = require("./MessageTemplate");
 require("dotenv").config();
 
 exports.sendWhatsAppMessage = async (data) => {

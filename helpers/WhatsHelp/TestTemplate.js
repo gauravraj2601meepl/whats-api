@@ -1,10 +1,6 @@
 const { default: axios } = require("axios");
 require("dotenv").config();
 
-const { sendTemplateMessage1, sendTemplateMessage2 } = require("../WhatsappBusiness/MessageTemplate");
-// WHATSAPP_TOKEN
-
-
 
 exports.sendBUInfoTemplate = async(req, res) => {
   const {number, name} = req
