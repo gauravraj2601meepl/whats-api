@@ -45,10 +45,12 @@ exports.webhookHandler = async (req, res) => {
           const messageData = change.value.messages;
           const contactData = change.value.contacts;
           const profileName = contactData?.[0]?.profile?.name || "";
-          const message = messageData?.[0] || {};
+          const message = messageData?.[0];
           const from = message.from;
           const text = message.text?.body || null;
           const interactiveData = message.interactive;
+
+          
 
           console.log("Message received:", { from, text, interactiveData });
 
@@ -87,6 +89,8 @@ exports.webhookHandler = async (req, res) => {
               message: "👋 Welcome! Type / to see the available commands.",
             });
           }
+
+
         });
       });
 

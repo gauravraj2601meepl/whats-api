@@ -70,7 +70,7 @@ exports.handleCommand = async (text, from, profileName) => {
             });
             break;
           case "/addjob":
-            jobData[from] = { step: 0 }; //Initialize the job creation process
+            jobDatas[from] = { step: 0 }; //Initialize the job creation process
             await sendMessage({
               number: from,
               message: "Let's add a new job!Please provide the Job Title.",
