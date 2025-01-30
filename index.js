@@ -3,14 +3,15 @@ const express = require("express");
 
 const cors= require("cors")
 const app= express();
-const WhatsappRoute = require("./routes/WhatsappRoute");
+const WhatsappRoute = require("./routes/WhatsappBusiness/WhatsappBusinessRoute");
+const WebhookRoute = require("./routes/WhatsappBusiness/WebhookRoute")
 const { connection } = require("./db");
 const { candidateRouter } = require("./routes/CandidateRoute");
 
 app.use(express.json())
 app.use(cors())
 
-app.use("/api/whatsapp",WhatsappRoute)
+app.use("/api/whatsapp",WhatsappRoute, WebhookRoute)
 app.use("/candidate", candidateRouter)
 
 app.get("/",(req,res)=>{

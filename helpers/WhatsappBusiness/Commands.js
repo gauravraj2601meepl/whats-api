@@ -4,7 +4,7 @@ const { sendTemplateMessage1 } = require("./MessageTemplate");
 
 exports.handleCommand = async (text, from, profileName) => {
     const regex = /^\/meepl onboarding/;
-    const command = text.match(regex)[0]; 
+    const command = text?.match(regex)?.[0]; 
     
     if (command === "/meepl onboarding") {
         const encVal = text.replace(command, "").trim();
