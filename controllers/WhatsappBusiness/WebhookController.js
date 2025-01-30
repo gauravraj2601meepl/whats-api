@@ -46,9 +46,9 @@ exports.webhookHandler = async (req, res) => {
           const contactData = change.value.contacts;
           const profileName = contactData?.[0]?.profile?.name || "";
           const message = messageData?.[0];
-          const from = message.from;
-          const text = message.text?.body || null;
-          const interactiveData = message.interactive;
+          const from = message?.from;
+          const text = message?.text?.body || null;
+          const interactiveData = message?.interactive;
 
           
 
@@ -59,6 +59,7 @@ exports.webhookHandler = async (req, res) => {
               number: from,
               name: profileName,
             });
+            console.log("inside / ")
           } else if (interactiveData?.list_reply) {
             const selectedCommandId = interactiveData.list_reply.id;
             await handleCommand(
@@ -66,6 +67,7 @@ exports.webhookHandler = async (req, res) => {
               from,
               profileName
             );
+            console.log("inside Command_list-reply")
           } else if (interactiveData?.button_reply) {
             const buttonId = interactiveData.button_reply.id.split("_");
             if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
@@ -76,18 +78,23 @@ exports.webhookHandler = async (req, res) => {
                 });
                 return;
             }
+            console.log("inside button-reply")
           } else if (text?.startsWith("/")) {
             await handleCommand(text, from, profileName);
+            console.log("inside / commands any")
           } else if (userDatas[from]) {
             await handleAddUserFlow(text, from, sendMessage);
+            console.log("inside userData(from)")
           } else if (jobDatas[from]) {
             await handleAddJobFlow(from, text, sendMessage);
+            console.log("inside Add job flow")
           } else {
             await sendMessage({
               number: from,
               name: profileName,
               message: "👋 Welcome! Type / to see the available commands.",
             });
+            console.log("eleeeeeeeeeeeeeeeeeeeeeeeeeee")
           }
 
 
