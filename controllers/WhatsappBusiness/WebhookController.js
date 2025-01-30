@@ -1,6 +1,7 @@
 const { handleAddUserFlow, handleAddJobFlow } = require("../../helpers/WhatsappBusiness/AddFlowHelper");
 const { sendListMessage, handleCommand } = require("../../helpers/WhatsappBusiness/Commands");
 const { sendMessage } = require("../../helpers/WhatsappBusiness/MessageHelper");
+const { userDatas, jobDatas } = require("../../helpers/WhatsappBusiness/ResponseDataStorage");
 require("dotenv").config();
 
 exports.webhookConfiguration = async (req, res) => {
@@ -77,7 +78,7 @@ exports.webhookHandler = async (req, res) => {
             await handleCommand(text, from, profileName);
           } else if (userDatas[from]) {
             await handleAddUserFlow(text, from, sendMessage);
-          } else if (jobData[from]) {
+          } else if (jobDatas[from]) {
             await handleAddJobFlow(from, text, sendMessage);
           } else {
             await sendMessage({
