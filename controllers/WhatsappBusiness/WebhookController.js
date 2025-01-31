@@ -69,15 +69,15 @@ exports.webhookHandler = async (req, res) => {
                 name: profileName,
               });
             } else if (interactiveData?.list_reply) {
-              const selectedCommandId = interactiveData.list_reply.id;
+              const selectedCommandId = interactiveData.list_reply?.id;
               await handleCommand(selectedCommandId, from, profileName);
             } else if (interactiveData?.button_reply) {
-              const buttonId = interactiveData?.button_reply?.id.split("_");
-              const encryptInfo = buttonId?.slice(2)
-              if (buttonId?.slice(0, 2).join("_") === "start_onboarding") {
+              const buttonId = interactiveData.button_reply?.id.split("_");
+              const encryptInfo = buttonId?.slice(2);
+              if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
                 userDatas[from] = {
                   step: 0,
-                  share_id: encryptInfo.join("_"),
+                  share_id: encryptInfo?.join("_"),
                   workspace: encryptInfo?.[1]
                 };
                 await sendMessage({
@@ -103,7 +103,7 @@ exports.webhookHandler = async (req, res) => {
           }
         });
       });
-
+      console.log("res_success",{message: "EVENT_RECEIVED"})
       return res.status(200).json({
         statuscode: 200,
         status: "success",
@@ -111,7 +111,8 @@ exports.webhookHandler = async (req, res) => {
         error: [{ message: "", errorcode: "" }],
       });
     }
-
+    
+    console.log("err_!whatsapp_business_account", { message: "Not Found", errorcode: 400 })
     return res.status(400).json({
       statuscode: 400,
       status: "failed",
@@ -119,6 +120,7 @@ exports.webhookHandler = async (req, res) => {
       error: [{ message: "Not Found", errorcode: 400 }],
     });
   } catch (err) {
+    console.log("err_webhookHandler", { message: err.message, errorcode: 500 })
     res.status(500).json({
       statuscode: 500,
       status: "failed",

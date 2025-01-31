@@ -35,7 +35,6 @@ exports.sendMessage = async (req) => {
     };
 
     if (type === "interactive") {
-      // Handle interactive messages
       data.type = "interactive";
       data.interactive = {
         type: "button",
@@ -49,7 +48,6 @@ exports.sendMessage = async (req) => {
         };
       }
     } else {
-      // Handle regular text messages
       data.type = "text";
       const bodyText = name ? `${name} - ${message}` : message;
       data.text = {
@@ -73,7 +71,6 @@ exports.sendTemplateMessage = async (req, res) => {
   try {
     let responseData;
 
-    // Based on the template, call the respective function
     if (template === "hello_world") {
       responseData = await sendTemplateMessage2({ number, name });
     } else if (template === "meepl_welcome") {
@@ -87,7 +84,6 @@ exports.sendTemplateMessage = async (req, res) => {
       });
     }
 
-    // Extract relevant data from the response
     if (responseData.statuscode === 200) {
       return res.status(200).json({
         statuscode: 200,
@@ -121,7 +117,6 @@ exports.sendTemplateMessage = async (req, res) => {
     });
   }
 };
-/////////////////////
 
 exports.sendTextMessage = async (req, res) => {
   const { number, name, message } = req.body;
