@@ -28,6 +28,7 @@ exports.webhookConfiguration = async (req, res) => {
         error: [{ message: "", errorcode: "" }],
       });
     }
+    console.log("err_token_Verify", { message: "Forbidden: Invalid token", errorcode: 400 })
     return res.status(400).json({
       statuscode: 400,
       status: "failed",
@@ -35,6 +36,7 @@ exports.webhookConfiguration = async (req, res) => {
       error: [{ message: "Forbidden: Invalid token", errorcode: 400 }],
     });
   } catch (err) {
+    console.log("err_res",{ message: err.message, errorcode: 500 })
     res.status(500).json({
       statuscode: 500,
       status: "failed",
