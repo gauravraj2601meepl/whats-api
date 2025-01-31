@@ -21,7 +21,7 @@ app.get("/",(req,res)=>{
 app.listen(process.env.PORT || 8010,async()=>{
     try {
         await connection
-        console.log("Connected to DB")
+        console.log("Connected to DataBase")
         console.log(`WhatsApp Server is running on PORT ${process.env.PORT || 8010}`)
     } catch (error) {
         console.log(error)
