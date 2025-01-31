@@ -6,13 +6,6 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
 
     switch (userData.step) {
         case 0:
-            if (!text.trim()) {
-                await sendMessage({
-                    number: from,
-                    message: "❌ First Name cannot be empty. Please enter your *First Name*.",
-                });
-                return;
-            }
             userData.firstName = text;
             userData.step++;
             await sendMessage({
@@ -22,7 +15,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
 
         case 1:
-            userData.lastName = text.trim() ? text : null;
+            userData.lastName = text;
             userData.step++;
             await sendMessage({
                 number: from,
@@ -31,7 +24,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
 
         case 2:
-            userData.gender = text.trim()? text : null;
+            userData.gender = text;
             userData.step++;
             await sendMessage({
                 number: from,
@@ -40,7 +33,15 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
 
         case 3:
-            userData.mobile = text.trim() ? text : null;
+            const numericRegex = /^\d+$/;
+            if (!numericRegex.test(text)) {
+                await sendMessage({
+                    number: from,
+                    message: "❌ Invalid mobile number. Please enter a number containing only digits.",
+                });
+                return; 
+            }
+            userData.mobile = text;
             userData.step++;
             await sendMessage({
                 number: from,
@@ -49,18 +50,11 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
 
         case 4:
-            if (!text.trim()) {
-                await sendMessage({
-                    number: from,
-                    message: "Email cannot be empty. Please enter your *Office Email Address*."
-                })
-                return;
-            }
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if(!emailRegex.test(text)) {
                 await sendMessage({
                     number: from,
-                    message: "Invalid email format. Please enter a valid *Office Email Address*."
+                    message: "❌ Invalid email format. Please enter a valid *Office Email Address*."
                 })
                 return;
             } 
@@ -74,21 +68,12 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
 
         case 5:
             const trimmedText = text.trim();
-            if (!trimmedText) {
-                userData.birthDate = null;
-                userData.step++;
-                await sendMessage({
-                    number: from,
-                    message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName || "Not provided"}\nGender: ${userData.gender || "Not provided"}\nMobile: ${userData.mobile || "Not provided"}\nEmail: ${userData.email}\nBirth Date: ${userData.birthDate || "Not provided"}\n\nType 'Confirm' to submit or 'Cancel' to discard.`  
-                });
-                return;
-            }
             // Date format validation (YYYY-MM-DD)
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
             if (!dateRegex.test(trimmedText)) {
                 await sendMessage({
                     number: from,
-                    message: "Invalid date format. Please enter your *Birth Date* in the format YYYY-MM-DD.",
+                    message: "❌ Invalid date format. Please enter your *Birth Date* in the format YYYY-MM-DD.",
                 });
                 return;
             }
@@ -102,7 +87,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
              ) {
                  await sendMessage({
                      number: from,
-                     message: "Invalid date. Please enter a valid *Birth Date* in the format YYYY-MM-DD or leave it blank.",
+                     message: "❌ Invalid date. Please enter a valid *Birth Date* in the format YYYY-MM-DD or leave it blank.",
                  });
                  return; 
              }
@@ -148,7 +133,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
         default:
             await sendMessage({
                 number: from,
-                message: "An unexpected error occurred. Please restart the process /meepl onboarding G@R",
+                message: `An unexpected error occurred. Please restart the process /meepl onboarding ${userData?.share_id}`,
             });
             delete userDatas[from];
     }
