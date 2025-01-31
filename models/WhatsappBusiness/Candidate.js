@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     mobile: String,
     email: String,
     birthDate: String,
-    share_id: String
+    share_id: String,
+    workspace: String
 }, {
     timestamps: true
 });

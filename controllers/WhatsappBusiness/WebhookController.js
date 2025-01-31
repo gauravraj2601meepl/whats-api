@@ -72,11 +72,13 @@ exports.webhookHandler = async (req, res) => {
               const selectedCommandId = interactiveData.list_reply.id;
               await handleCommand(selectedCommandId, from, profileName);
             } else if (interactiveData?.button_reply) {
-              const buttonId = interactiveData.button_reply.id.split("_");
-              if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
+              const buttonId = interactiveData?.button_reply?.id.split("_");
+              const encryptInfo = buttonId?.slice(2)
+              if (buttonId?.slice(0, 2).join("_") === "start_onboarding") {
                 userDatas[from] = {
                   step: 0,
-                  share_id: buttonId.slice(2).join("_"),
+                  share_id: encryptInfo.join("_"),
+                  workspace: encryptInfo?.[1]
                 };
                 await sendMessage({
                   number: from,

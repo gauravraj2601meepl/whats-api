@@ -73,7 +73,8 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                     mobile: userData?.mobile,
                     email: userData?.email,
                     birthDate: userData?.birthDate,
-                    share_id: userData?.share_id                   
+                    share_id: userData?.share_id,
+                    workspace: userData?.workspace                   
                 })
                 try {
                     await newCandidate.save();
