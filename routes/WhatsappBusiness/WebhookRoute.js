@@ -2,8 +2,21 @@ const express = require("express");
 const { webhookConfiguration, webhookHandler } = require("../../controllers/WhatsappBusiness/WebhookController");
 const router = express.Router();
 
-router.get("/webhook",webhookConfiguration)
+// router.get("/webhook",webhookConfiguration)
 router.post("/webhook", webhookHandler)
+router.get("/webhook", (req, res) => {
+  const VERIFY_TOKEN = process.env.WEBHOOK_CONFIG_TOKEN;
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode && token === VERIFY_TOKEN) {
+    console.log("Webhook Verified");
+    return res.status(200).send(challenge);
+  }
+
+  res.sendStatus(403);
+});
 
 module.exports = router;
 
