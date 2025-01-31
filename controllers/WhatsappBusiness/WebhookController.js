@@ -19,7 +19,7 @@ exports.webhookConfiguration = async (req, res) => {
     const mode = req.query["hub.mode"];
     const token = req.query["hub.verify_token"];
     const challenge = req.query["hub.challenge"];
-
+console.log("mode", mode, "token", token, "ver_token", VERIFY_TOKEN)
     if (mode && token === VERIFY_TOKEN) {
       return res.status(200).json({
         statuscode: 200,
