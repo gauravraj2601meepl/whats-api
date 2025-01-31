@@ -6,62 +6,111 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
 
     switch (userData.step) {
         case 0:
+            if (!text.trim()) {
+                await sendMessage({
+                    number: from,
+                    message: "❌ First Name cannot be empty. Please enter your *First Name*.",
+                });
+                return;
+            }
             userData.firstName = text;
             userData.step++;
             await sendMessage({
                 number: from,
-                message: "Great! Now, please share your *Last Name*.",
+                message: "Great! Now, please share your *Last Name*:",
             });
             break;
 
         case 1:
-            userData.lastName = text;
+            userData.lastName = text.trim() ? text : null;
             userData.step++;
             await sendMessage({
                 number: from,
                 message: "Thanks! Please select your *Gender*:",
-                buttons: [
-                    { id: "gender_male", title: "Male" },
-                    { id: "gender_female", title: "Female" },
-                    { id: "gender_nonbinary", title: "Non-Binary" },
-                ],
             });
             break;
 
         case 2:
-            userData.gender = text;
+            userData.gender = text.trim()? text : null;
             userData.step++;
             await sendMessage({
                 number: from,
-                message: "Got it! Now, share your *Personal Mobile Number*.",
+                message: "Got it! Now, share your *Personal Mobile Number*:",
             });
             break;
 
         case 3:
-            userData.mobile = text;
+            userData.mobile = text.trim() ? text : null;
             userData.step++;
             await sendMessage({
                 number: from,
-                message: "Thanks! Please share your *Office Email Address*.",
+                message: "Thanks! Please share your *Office Email Address*:",
             });
             break;
 
         case 4:
+            if (!text.trim()) {
+                await sendMessage({
+                    number: from,
+                    message: "Email cannot be empty. Please enter your *Office Email Address*."
+                })
+                return;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(text)) {
+                await sendMessage({
+                    number: from,
+                    message: "Invalid email format. Please enter a valid *Office Email Address*."
+                })
+                return;
+            } 
             userData.email = text;
             userData.step++;
             await sendMessage({
                 number: from,
-                message: "Almost there! Please share your *Birth Date* (YYYY-MM-DD).",
+                message: "Almost there! Please share your *Birth Date* (YYYY-MM-DD):",
             });
             break;
 
         case 5:
-            userData.birthDate = text;
+            const trimmedText = text.trim();
+            if (!trimmedText) {
+                userData.birthDate = null;
+                userData.step++;
+                await sendMessage({
+                    number: from,
+                    message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName || "Not provided"}\nGender: ${userData.gender || "Not provided"}\nMobile: ${userData.mobile || "Not provided"}\nEmail: ${userData.email}\nBirth Date: ${userData.birthDate || "Not provided"}\n\nType 'Confirm' to submit or 'Cancel' to discard.`  
+                });
+                return;
+            }
+            // Date format validation (YYYY-MM-DD)
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(trimmedText)) {
+                await sendMessage({
+                    number: from,
+                    message: "Invalid date format. Please enter your *Birth Date* in the format YYYY-MM-DD.",
+                });
+                return;
+            }
+             // Additional check for valid date (e.g., month between 1-12, day between 1-31)
+             const [year, month, day] = trimmedText.split('-');
+             const date = new Date(trimmedText);
+             if (
+                 date.getFullYear() !== parseInt(year) ||
+                 date.getMonth() + 1 !== parseInt(month) ||
+                 date.getDate() !== parseInt(day)
+             ) {
+                 await sendMessage({
+                     number: from,
+                     message: "Invalid date. Please enter a valid *Birth Date* in the format YYYY-MM-DD or leave it blank.",
+                 });
+                 return; 
+             }
+            userData.birthDate = trimmedText;
             userData.step++;
             await sendMessage({
                 number: from,
-                message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName}\nGender: ${userData.gender}\nMobile: ${userData.mobile}\nEmail: ${userData.email}\n\nType 'Confirm' to submit or 'Cancel' to discard.`
-                
+                message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName || "Not provided"}\nGender: ${userData.gender || "Not provided"}\nMobile: ${userData.mobile || "Not provided"}\nEmail: ${userData.email}\nBirth Date: ${userData.birthDate || "Not provided"}\n\nType 'Confirm' to submit or 'Cancel' to discard.`     
             });
             break;
         case 6:
