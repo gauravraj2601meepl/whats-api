@@ -15,7 +15,7 @@ require("dotenv").config();
 
 exports.webhookConfiguration = async (req, res) => {
   try {
-    const VERIFY_TOKEN = process.env.WEBHOOK_CONFIG_TOKEN;
+    const VERIFY_TOKEN = "meepl_token";
     const mode = req.query["hub.mode"];
     const token = req.query["hub.verify_token"];
     const challenge = req.query["hub.challenge"];
