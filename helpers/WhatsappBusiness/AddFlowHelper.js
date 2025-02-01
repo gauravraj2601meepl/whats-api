@@ -100,6 +100,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
         case 6:
             if (text.toLowerCase() === "confirm") {
+                const {step,...filteredUserData} = userData;
                 const newCandidate = new Candidate_Module({
                     firstName: userData?.firstName,
                     lastName: userData?.lastName,
@@ -108,7 +109,8 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                     email: userData?.email,
                     birthDate: userData?.birthDate,
                     share_id: userData?.share_id,
-                    workspace: userData?.workspace                   
+                    workspace: userData?.workspace,
+                    userData: JSON.stringify(filteredUserData)                 
                 })
                 try {
                     await newCandidate.save();

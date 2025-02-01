@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     email: {type:String, required: true},
     birthDate: String,
     share_id: String,
-    workspace: {type:String, required: true}
+    workspace: {type:String, required: true},
+    userData: String
 }, {
     timestamps: true
 });
