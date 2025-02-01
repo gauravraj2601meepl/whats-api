@@ -114,7 +114,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                 })
                 try {
                     await newCandidate.save();
-                    console.log("newCandidate Saved:", userData);
+                    console.log("newCandidate Saved:", userData, "json",JSON.stringify(filteredUserData));
                     delete userDatas[from]; 
                     await sendMessage({
                         number: from,
