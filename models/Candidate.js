@@ -8,7 +8,7 @@ const schema = {
     WhatsappAddCandidate: joi.object({
         domain_name: joi.string().required(),
         user_id: joi.number().required(),
-        user_data: joi.string().required(),
+        employee_data: joi.string().required(),
 
     }),
 }

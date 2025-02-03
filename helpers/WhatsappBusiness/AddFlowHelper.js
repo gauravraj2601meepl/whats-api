@@ -104,7 +104,7 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                 const {step,workspace, user_id, ...filteredUserData} = userData;
                 const newCandidate ={
                     domain_name: workspace,
-                    user_data: JSON.stringify([filteredUserData]),
+                    employee_data: JSON.stringify([filteredUserData]),
                     user_id: user_id
                 }
                 const newCandidate2 = new Candidate_Module({

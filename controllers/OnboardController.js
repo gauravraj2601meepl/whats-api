@@ -90,6 +90,28 @@ const OnboardWhatsappCanidate = async (data) => {
     }
 };
 
+let data = {
+    step: 3,
+    share_id: "@gaurav_adobemeepl",
+    workspace: "adobemeepl",
+    
+    user_id: "228",
+    firstName: "fourth",
+    lastName: "user",
+    gender: "Male",
+    mobile: "1236547890",
+    email: "fourth@gmail.com",
+    birthDate: "2025-12-12",
+}
+
+ let {step, ...filteredUserData} = data;
+ const newCandidate ={
+     domain_name: "adobemeepl",
+     employee_data: JSON.stringify([filteredUserData]),
+     user_id: '228'
+ }
+
+//  OnboardWhatsappCanidate(newCandidate)
 
 
 module.exports = {
