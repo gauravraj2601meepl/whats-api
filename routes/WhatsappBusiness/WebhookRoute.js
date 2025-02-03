@@ -39,5 +39,32 @@ console.log("start_cmd:", start_cmd)
 let encInfo= buttonId.slice(2)
 console.log("share_id:", encInfo.join("_"))
 console.log("workspace:", encInfo?.[1])
+console.log("used_id:", encInfo?.[0])
+
+
+
+////////////////
+
+
+let data = {
+    step: 3,
+    share_id: "@gaurav_adobemeepl",
+    workspace: "adobemeepl",
+    
+    user_id: "228"
+    firstName: "third",
+    lastName: "user",
+    gender: "Male",
+    mobile: "1236547890",
+    email: "third@gmail.com",
+    birthDate: "2025-12-12",
+}
+
+ let {step, ...filteredUserData} = data;
+ const newCandidate ={
+     domain_name: "adobemeep",
+     employee_data: JSON.stringify([filteredUserData]),
+     user_id: '228'
+ }
 
 */

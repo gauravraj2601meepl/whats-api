@@ -80,7 +80,8 @@ exports.webhookHandler = async (req, res) => {
                 userDatas[from] = {
                   step: 0,
                   share_id: encryptInfo?.join("_"),
-                  workspace: encryptInfo?.[1]
+                  workspace: encryptInfo?.[1],
+                  user_id: encryptInfo?.[0],
                 };
                 await sendMessage({
                   number: from,

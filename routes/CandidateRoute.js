@@ -1,6 +1,6 @@
 
 const express = require("express");
-const Candidate_Module = require("../models/WhatsappBusiness/Candidate");
+const Candidate_Module = require("../models/WhatsappBusiness/Candidate2");
 const candidateRouter = express.Router();
 
 

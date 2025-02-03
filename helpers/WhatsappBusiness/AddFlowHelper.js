@@ -1,4 +1,5 @@
-const Candidate_Module = require("../../models/WhatsappBusiness/Candidate");
+const { OnboardWhatsappCanidate } = require("../../controllers/OnboardController");
+const Candidate_Module = require("../../models/WhatsappBusiness/Candidate2");
 const { userDatas, jobDatas } = require("./ResponseDataStorage");
 
 const handleAddUserFlow = async (text, from, sendMessage) => {
@@ -100,8 +101,13 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
             break;
         case 6:
             if (text.toLowerCase() === "confirm") {
-                const {step,...filteredUserData} = userData;
-                const newCandidate = new Candidate_Module({
+                const {step,workspace, user_id, ...filteredUserData} = userData;
+                const newCandidate ={
+                    domain_name: workspace,
+                    user_data: JSON.stringify([filteredUserData]),
+                    user_id: user_id
+                }
+                const newCandidate2 = new Candidate_Module({
                     firstName: userData?.firstName,
                     lastName: userData?.lastName,
                     gender: userData?.gender,
@@ -113,13 +119,22 @@ const handleAddUserFlow = async (text, from, sendMessage) => {
                     userData: JSON.stringify(filteredUserData)                 
                 })
                 try {
-                    await newCandidate.save();
-                    console.log("newCandidate Saved:", userData, "json",JSON.stringify(filteredUserData));
-                    delete userDatas[from]; 
-                    await sendMessage({
-                        number: from,
-                        message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
-                    });
+                    const result= await OnboardWhatsappCanidate(newCandidate)
+                    if (result?.status === "success") {
+                        await newCandidate2.save();
+                        delete userDatas[from]; 
+                        await sendMessage({
+                            number: from,
+                            message: "🎉 You're all set! Welcome to Meepl, and thank you for completing the onboarding process."
+                        });
+                    }
+                    else {
+                        delete userDatas[from];
+                        await sendMessage({
+                            number: from,
+                            message: `❌ Candidate Onboarding failed.`
+                        });
+                    }
                 } catch (error) {
                     console.error("error_newCandidate Saved:",error.message)
                 }

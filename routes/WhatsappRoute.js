@@ -22,6 +22,7 @@ const {
   userDatas,
 } = require("../helpers/WhatsappBusiness/ResponseDataStorage");
 
+
 router.post("/sendWhatsappTemplate", sendTemplateMessage);
 router.post("/sendTextMessage", sendTextMessage);
 router.post("/sendMeeplInfo", sendTextMessagePreview);
