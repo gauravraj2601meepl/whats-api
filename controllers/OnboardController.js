@@ -49,12 +49,10 @@ const addWhatsappOnboard = async (req, res) => {
                 },
                 type: sequelize.QueryTypes.SELECT,
             })
-            console.log("response", response);
             return {
                 statuscode: 200,
                 status: "success",
-                data: response,
-                error: [{ message: "", errorcode: "" }],
+                data: response?.length,
             };
     } catch (err) {
         return {
@@ -74,7 +72,6 @@ const OnboardWhatsappCanidate = async (data) => {
         }
 
         const saveResult = await addWhatsappOnboard({body: data}, null);
-        console.log("saveREsult", saveResult)
         if (saveResult?.status === "success") {
             console.log("res_addWhatsappOnboard", saveResult)
             return saveResult;
