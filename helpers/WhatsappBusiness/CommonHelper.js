@@ -1,6 +1,7 @@
 const uploadImageWhatsapp = async (imageData) => {
         const imageId = imageData.id;
-        const imageName = `Whatsapp/Onboarding/${imageId}.jpg`; 
+        const mediaType = imageData?.mime_type?.split("/")?.[2] || "jpg"
+        const imageName = `Whatsapp/Onboarding/${imageId}.${mediaType}`; 
 console.log("imageName")
         const imageUrl = `https://graph.facebook.com/v15.0/${imageId}`;
 console.log("imageUrl", imageUrl);

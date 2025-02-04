@@ -1,5 +1,6 @@
 const { OnboardWhatsappCanidate } = require("../../controllers/OnboardController");
 const Candidate_Module = require("../../models/WhatsappBusiness/Candidate2");
+const { uploadImageWhatsapp } = require("./CommonHelper");
 const { userDatas, jobDatas } = require("./ResponseDataStorage");
 
 const handleAddUserFlow = async (text, from, sendMessage, media) => {
