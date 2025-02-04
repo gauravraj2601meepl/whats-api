@@ -107,7 +107,7 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
                         number: from,
                         message: "Image uploaded successfully"
                     })
-                    userData.image_name = uploadProfile?.data?.imageName;
+                    userData.image_name = uploadProfile?.data?.image_name;
                     userData.step++;
                     await sendMessage({
                         number: from,
@@ -117,7 +117,7 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
                 else {
                     await sendMessage({
                         number: from,
-                        message: "Image upload failed"
+                        message: "❌ Image upload failed"
                     })
                 } 
                 break;
