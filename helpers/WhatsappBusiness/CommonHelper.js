@@ -28,7 +28,6 @@ const uploadImageWhatsapp = async (imageData) => {
             headers,
             responseType: "arraybuffer",
         });
-        console.log("imageREsponse", imageResponse)
         // Upload the image to DigitalOcean Spaces
         const uploadResponse = await uploadFile({
             file_name: imageName,
