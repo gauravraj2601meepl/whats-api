@@ -59,21 +59,26 @@ exports.webhookHandler = async (req, res) => {
 
           if (messageData && messageData.length > 0) {
             const message = messageData[0];
+            console.log("messageData",message)
             const from = message?.from;
             const text = message?.text?.body || null;
             const interactiveData = message?.interactive;
+            const imageData = message?.image;
+            const documentData = message?.document;
 
-            console.log("Message received:", { from, text, interactiveData });
+            console.log("Message received:", { from, text, interactiveData, imageData, documentData });
 
             if (text === "/") {
               await sendListMessage({
                 number: from,
                 name: profileName,
               });
-            } else if (interactiveData?.list_reply) {
+            } 
+            else if (interactiveData?.list_reply) {
               const selectedCommandId = interactiveData.list_reply?.id;
               await handleCommand(selectedCommandId, from, profileName);
-            } else if (interactiveData?.button_reply) {
+            } 
+            else if (interactiveData?.button_reply) {
               const buttonId = interactiveData.button_reply?.id.split("_");
               const encryptInfo = buttonId?.slice(2);
               if (buttonId.slice(0, 2).join("_") === "start_onboarding") {
@@ -90,13 +95,18 @@ exports.webhookHandler = async (req, res) => {
                 });
                 return;
               }
-            } else if (text?.startsWith("/")) {
+            } 
+            else if (text?.startsWith("/")) {
               await handleCommand(text, from, profileName);
-            } else if (userDatas[from]) {
-              await handleAddUserFlow(text, from, sendMessage);
-            } else if (jobDatas[from]) {
+            } 
+            else if (userDatas[from]) {
+              await handleAddUserFlow(text, from, sendMessage,{imageData, documentData});
+
+            } 
+            else if (jobDatas[from]) {
               await handleAddJobFlow(from, text, sendMessage);
-            } else {
+            } 
+            else {
               await sendMessage({
                 number: from,
                 name: profileName,
