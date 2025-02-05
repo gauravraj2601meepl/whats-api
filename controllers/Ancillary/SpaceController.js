@@ -21,11 +21,9 @@ const uploadFile = async (params) => {
     };
     try {
         const data = await s3Client.send(new PutObjectCommand(bucketParams));
-        console.log({ message: "Image uploaded successfully", statuscode: 200 })
-        return { message: "Image uploaded successfully", statuscode: 200 }
+        return { message: "File uploaded successfully", statuscode: 200 }
     } catch (err) {
-        console.log(err,{ message: "Error occured while uploadig image", statuscode: 500 })
-        return { message: "Error occured while uploadig image", statuscode: 500 }
+        return { message: "Error occured while uploadig file", statuscode: 500 }
     }
 };
 console.log("hai")

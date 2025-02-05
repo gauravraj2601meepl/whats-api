@@ -1,6 +1,6 @@
 const { OnboardWhatsappCanidate } = require("../../controllers/OnboardController");
 const Candidate_Module = require("../../models/WhatsappBusiness/Candidate2");
-const { uploadImageWhatsapp } = require("./CommonHelper");
+const { uploadFileWhatsapp } = require("./CommonHelper");
 const { userDatas, jobDatas } = require("./ResponseDataStorage");
 
 const handleAddUserFlow = async (text, from, sendMessage, media) => {
@@ -101,17 +101,17 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
             });
             break;
         case 6:
-                const uploadProfile = await uploadImageWhatsapp(media?.imageData)
+                const uploadProfile = await uploadFileWhatsapp(media?.imageData)
                 if(uploadProfile?.status === "success" ) {
                     await sendMessage({
                         number: from,
                         message: "Image uploaded successfully"
                     })
-                    userData.image_name = uploadProfile?.data?.image_name;
+                    userData.image_name = uploadProfile?.data?.file_name;
                     userData.step++;
                     await sendMessage({
                         number: from,
-                        message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName || "Not provided"}\nGender: ${userData.gender || "Not provided"}\nMobile: ${userData.mobile || "Not provided"}\nEmail: ${userData.email}\nBirth Date: ${userData.birthDate || "Not provided"}\n\nType 'Confirm' to submit or 'Cancel' to discard.`     
+                        message: `Please share your *Resume*:`     
                     });
                 }
                 else {
@@ -122,6 +122,27 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
                 } 
                 break;
         case 7:
+                const uploadResume = await uploadFileWhatsapp(media?.documentData)
+                if(uploadResume?.status === "success" ) {
+                    await sendMessage({
+                        number: from,
+                        message: "Resume uploaded successfully"
+                    })
+                    userData.resume_name = uploadProfile?.data?.file_name;
+                    userData.step++;
+                    await sendMessage({
+                        number: from,
+                        message: `Here's the Details:\n\nFirst Name: ${userData.firstName}\nLast Name: ${userData.lastName || "Not provided"}\nGender: ${userData.gender || "Not provided"}\nMobile: ${userData.mobile || "Not provided"}\nEmail: ${userData.email}\nBirth Date: ${userData.birthDate || "Not provided"}\nProfile Picture: ${userData.image_name ? "Provided" : "Not provided"}\nResume: ${userData.resume_name ? "Provided" : "Not provided"}\n\nType 'Confirm' to submit or 'Cancel' to discard.`     
+                    });
+                }
+                else {
+                    await sendMessage({
+                        number: from,
+                        message: "❌ Image upload failed"
+                    })
+                } 
+                break;
+        case 8:
             if (text.toLowerCase() === "confirm") {
                 const {step,workspace, user_id, ...filteredUserData} = userData;
                 const newCandidate ={
