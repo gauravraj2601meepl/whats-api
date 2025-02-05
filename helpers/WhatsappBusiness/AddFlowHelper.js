@@ -128,7 +128,7 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
                         number: from,
                         message: "Resume uploaded successfully"
                     })
-                    userData.resume_name = uploadProfile?.data?.file_name;
+                    userData.resume_name = uploadResume?.data?.file_name;
                     userData.step++;
                     await sendMessage({
                         number: from,
