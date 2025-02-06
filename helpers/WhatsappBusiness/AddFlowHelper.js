@@ -101,8 +101,14 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
             });
             break;
         case 6:
-                const uploadProfile = await uploadFileWhatsapp(media?.imageData)
-                if(uploadProfile?.status === "success" ) {
+                const uploadProfile = await uploadFileWhatsapp(media?.imageData, "image")
+                if (uploadProfile?.validation === "fail") {
+                    await sendMessage({
+                        number: from,
+                        message: "Only *png *jpeg is supported!"
+                    })
+                }
+                else if(uploadProfile?.status === "success" ) {
                     await sendMessage({
                         number: from,
                         message: "Image uploaded successfully"
@@ -122,8 +128,14 @@ const handleAddUserFlow = async (text, from, sendMessage, media) => {
                 } 
                 break;
         case 7:
-                const uploadResume = await uploadFileWhatsapp(media?.documentData)
-                if(uploadResume?.status === "success" ) {
+                const uploadResume = await uploadFileWhatsapp(media?.documentData, "resume")
+                if (uploadResume?.validation === "fail") {
+                    await sendMessage({
+                        number: from,
+                        message: "Only *pdf file is supported!"
+                    })
+                }
+                else if(uploadResume?.status === "success" ) {
                     await sendMessage({
                         number: from,
                         message: "Resume uploaded successfully"

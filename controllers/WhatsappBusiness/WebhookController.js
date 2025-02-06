@@ -6,6 +6,7 @@ const {
   sendListMessage,
   handleCommand,
 } = require("../../helpers/WhatsappBusiness/Commands");
+const { findDistanceLocation } = require("../../helpers/WhatsappBusiness/CommonHelper");
 const { sendMessage } = require("../../helpers/WhatsappBusiness/MessageHelper");
 const {
   userDatas,
@@ -67,13 +68,16 @@ exports.webhookHandler = async (req, res) => {
             const documentData = message?.document;
 
             console.log("Message received:", { from, text, interactiveData, imageData, documentData });
-
+            console.log("userDataaaaa", userDatas)
             if (text === "/") {
               await sendListMessage({
                 number: from,
                 name: profileName,
               });
             } 
+            else if (message?.type === "location") {
+               await findDistanceLocation(message?.location ,from, sendMessage)
+            }
             else if (interactiveData?.list_reply) {
               const selectedCommandId = interactiveData.list_reply?.id;
               await handleCommand(selectedCommandId, from, profileName);

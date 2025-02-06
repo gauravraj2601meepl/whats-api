@@ -65,6 +65,56 @@ exports.sendMessage = async (req) => {
   }
 };
 
+exports.sendLocationRequestMessage = async (req, res) => {
+  const { number } = req.body;
+  try {
+    const url = `${process.env.WHATSAPP_API}/messages`;
+    const headers = {
+      Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+      "Content-Type": "application/json",
+    };
+    const data = {
+      messaging_product: "whatsapp",
+      to: number,
+      recipient_type: "individual", // group also
+        type: "interactive",
+        interactive: {
+            type: "location_request_message",
+            body: {
+            text: "Please share Your Current location"
+            },
+            action: {
+            name: "send_location"
+            }
+        }
+    };
+    const response = await axios.post(url, data, { headers });
+    const res_data = response.data || "Unknown";
+    console.log("res_sendLocationRequestMessage", res_data);
+    return res?.status(200).json({
+      statuscode: 200,
+      status: "success",
+      data: res_data,
+      error: [{ message: "", errorcode: "" }],
+    });
+  } catch (err) {
+    console.log("err_sendLocationRequestMessage", err.message, err.response?.data);
+    res?.status(500).json({
+      statuscode: 500,
+      status: "failed",
+      template: template,
+      data: null,
+      error: [
+        {
+          message: err?.message || "Unknown error",
+          errorcode: err?.response?.status || 500,
+          details: err?.response?.data || {},
+        },
+      ],
+    });
+  }
+};
+
 exports.sendTemplateMessage = async (req, res) => {
   const { number, name, template } = req.body;
 

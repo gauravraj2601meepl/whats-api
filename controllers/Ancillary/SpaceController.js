@@ -26,7 +26,6 @@ const uploadFile = async (params) => {
         return { message: "Error occured while uploadig file", statuscode: 500 }
     }
 };
-console.log("hai")
 
 // Delete a file from space
 const deleteFile = async (params) => {
