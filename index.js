@@ -1,4 +1,6 @@
 const express = require("express");
+// const ngrok = require('@ngrok/ngrok');
+const { default: axios } = require("axios");
 
 
 const cors= require("cors")
@@ -12,7 +14,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use("/api/whatsapp",WhatsappRoute, WebhookRoute)
-app.use("/candidate", candidateRouter)
+app.use("/mongo", candidateRouter)
 
 app.get("/",(req,res)=>{
     res.send("Welcome to Whatsapp API")
