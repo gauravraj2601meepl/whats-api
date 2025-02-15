@@ -60,14 +60,15 @@ exports.webhookHandler = async (req, res) => {
 
           if (messageData && messageData.length > 0) {
             const message = messageData[0];
-            console.log("messageData",message)
+            console.log("messageData",message);
             const from = message?.from;
             const text = message?.text?.body || null;
             const interactiveData = message?.interactive;
             const imageData = message?.image;
             const documentData = message?.document;
+            const location = message?.location;
 
-            console.log("Message received:", { from, text, interactiveData, imageData, documentData });
+            console.log("Message received:", { from, text, interactiveData, imageData, documentData, location });
             console.log("userDataaaaa", userDatas)
             if (text === "/") {
               await sendListMessage({
@@ -104,6 +105,9 @@ exports.webhookHandler = async (req, res) => {
               await handleCommand(text, from, profileName);
             } 
             else if (userDatas[from]) {
+              
+              ///
+              
               await handleAddUserFlow(text, from, sendMessage,{imageData, documentData});
 
             } 

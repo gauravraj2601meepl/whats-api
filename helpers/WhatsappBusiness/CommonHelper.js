@@ -1,8 +1,6 @@
 const { uploadFile } = require("../../controllers/Ancillary/SpaceController");
 const axios = require("axios");
-const {
-  OnboardWhatsappCanidate,
-} = require("../../controllers/OnboardController");
+
 const Location_Module = require("../../models/Location/Location2");
 
 const uploadFileWhatsapp = async (mediaData, media_type) => {
